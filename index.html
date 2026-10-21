@@ -387,6 +387,12 @@ ol.toc span{font-family:var(--f-mono);color:var(--accent);min-width:2.4em}
 .termhint{margin:14px 0 0;font-size:.8rem;color:var(--muted);text-align:center}
 .revrow{text-align:center;padding:6px 0 0}
 .revrow .lnk{border:0;background:none;font:inherit;font-size:.88rem;color:var(--accent-deep);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 8px}
+.pflow{margin:10px 0 14px;padding:12px 14px;border-radius:14px;background:var(--accent-soft)}
+.pflow>b{display:block;font-size:1.02rem;color:var(--accent-deep);margin-bottom:6px}
+.pflow .pf{display:flex;flex-wrap:wrap;align-items:center;gap:6px 4px}
+.pflow .pf span{font-size:.86rem;background:var(--surface);border-radius:999px;padding:3px 10px;line-height:1.5}
+.pflow .pf i{font-style:normal;color:var(--accent);font-size:.85rem}
+.pflow p{margin:8px 0 0;font-size:.86rem;color:var(--ink)}
 
 .lead{margin:0}
 .adv.ex{border-left-color:var(--ok)}
@@ -594,7 +600,7 @@ function orientSlides(){
     `<h3>為什麼重要</h3><ul class="pts">${R.why.map(x=>`<li><span>${esc(x)}</span></li>`).join("")}</ul><h3>承先啟後</h3><div class="hand"><div><b>你承接</b>${esc(R.take)}</div><div><b>你交棒</b>${esc(R.give)}</div></div>`,
     `<h3>從農場到出貨：三個職務怎麼接力</h3><div class="relay tight">${[{n:"訂單預測與生產排程",k:"業務・生管"},...D.flows.chain.steps].map((s,i)=>{const mine=(role==="qa"&&s.k.includes("衛管"))||(role==="prod"&&s.k.includes("生管"))||(role==="line"&&s.k.includes("生產主管"));return `<div class="${mine?"me":""}"><span>${i+1}</span>${esc(s.n)}<small style="margin-left:auto;opacity:.8">${esc(s.k)}</small></div>`;}).join("")}</div><p class="small">反白是你負責的段落；課程範圍到出貨為止。${esc(O.relay.note)}</p>`,
     `<h3>認識雪坊優格</h3><p>雪坊優格一直堅持做出單純、自然的好味道，希望為每一張餐桌帶來不一樣的生活。</p>
-    <h3>主力產品</h3><ul class="pts"><li><span><b>優格</b>：用鮮奶發酵，靠乳酸菌讓牛奶變酸、變濃稠。</span></li><li><span><b>優格冰淇淋</b>：把優格的風味做成冰品。</span></li><li><span><b>果醬</b>：以水果為主角，選用檢驗合格的水果。</span></li></ul>
+    <h3>主力產品</h3><div class="pflow"><b>優格</b><div class="pf"><span>嚴選鮮奶</span><i>→</i><span>加熱處理</span><i>→</i><span>接入乳酸菌</span><i>→</i><span>發酵：乳糖轉成乳酸</span><i>→</i><span>酪蛋白聚集成網狀結構</span><i>→</i><span>濃稠綿密</span></div><p>✦ 調整菌種、溫度、時間與終點酸度，雕琢不同的酸香與稠度</p></div><div class="pflow"><b>優格冰淇淋</b><div class="pf"><span>以優格為基底</span><i>→</i><span>拌入自家果醬</span><i>→</i><span>凍結成綿密冰品</span></div><p>✦ 融合雪坊的優格與果醬，一般冰品只有乳香，這裡多了發酵酸香與果香</p></div><div class="pflow"><b>果醬</b><div class="pf"><span>依台灣產季選果</span><i>→</i><span>檢驗合格才使用</span><i>→</i><span>手工熬煮</span><i>→</i><span>依熟度調整糖酸比</span><i>→</i><span>保留果粒與果香</span></div><p>✦ 跟著產季走，讓當季水果成為真正的主角</p></div>
     <p class="small">其他產品：希臘優格、優格飲、益生菌產品、優格皂。</p>
     <h3>這套課程</h3><p>只聚焦三條產線：優格、優格冰淇淋、果醬。三個職務每天都在守護這三條線，從排程、食安到現場，每一關都和你手上的工作有關。</p>
     <p class="small">課程中的案例、人物與數字都是<b>教學用的虛構情境</b>，不代表雪坊的實際狀況。</p>${factoryHTML(true)}`,
