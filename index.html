@@ -393,6 +393,7 @@ ol.toc span{font-family:var(--f-mono);color:var(--accent);min-width:2.4em}
 .pflow .pf span{font-size:.86rem;background:var(--surface);border-radius:999px;padding:3px 10px;line-height:1.5}
 .pflow .pf i{font-style:normal;color:var(--accent);font-size:.85rem}
 .pflow p{margin:8px 0 0;font-size:.86rem;color:var(--ink)}
+.revlist{display:flex;flex-wrap:wrap;gap:8px}.revok{font-size:.88rem;color:var(--ok);padding:8px 4px}
 
 .lead{margin:0}
 .adv.ex{border-left-color:var(--ok)}
@@ -445,6 +446,7 @@ let viewing = null, slide = 0, celebrate = false;
 let done = store.get("done",{}), notes = store.get("notes",{}), quiz = store.get("quiz",{}), flips = store.get("flips",{}), orders = store.get("orders",{});
 let fs = store.get("fs",1);
 let termSeen = store.get("termSeen",0);
+let review = null, revSeen = store.get("revSeen",{});
 const FS = [0.9,1,1.12,1.25];
 let calc = Object.assign({qty:4000,use:30,loss:5,stock:100,transit:20,rate:1200,cost:15,recall:200000,out:9600,ppl:8,hrs:8,ot:6,avail:420,demand:8400,cycle:3.5,av:85,pf:90,ql:98}, store.get("calc",{}));
 let FSI = [];
@@ -630,6 +632,30 @@ function deck(w,d){
   return {id, slides, doneLabel:"完成這一關", mins};
 }
 
+/* ---------- 每週錯題回顧 ---------- */
+function weekWrong(w){
+  const out=[];
+  for (let d=0; d<5; d++){
+    const key = d<3 ? `${role}-${w}-${d}` : d===3 ? `T-${w}` : `C-${w}`, L=D.lessons[key]; if(!L) continue;
+    const walk=b=>{ if(b.k==="byrole") (b.r[role]||[]).forEach(walk);
+      else if(b.k==="quiz" && quiz[b.key]!==undefined && quiz[b.key]!==b.a) out.push({b,d});
+      else if(b.k==="order"){ const p=orders[b.key]||[]; if(p.length===b.i.length && p.some((v,i)=>v!==i)) out.push({b,d}); } };
+    L.forEach(sl=>sl.forEach(walk));
+  }
+  return out;
+}
+function renderReview(){
+  const {w}=review, items=weekWrong(w);
+  if (!items.length){ review=null; return renderToday(); }
+  if (review.i>=items.length) review.i=items.length-1;
+  const it=items[review.i], last=review.i===items.length-1, S=new Set();
+  const body=block(it.b,{w,d:it.d,id:"rev"},S).replace(/<button type="button" class="btn ghost" data-act="ordreset"[^>]*>[^<]*<\/button>/,"");
+  const dots=items.map((_,i)=>`<i class="${i===review.i?"on":""}"></i>`).join("");
+  return `<div class="hero"><div class="top"><span class="wk">第 ${w} 週 · 錯題回顧</span><span class="wk">${review.i+1} / ${items.length}</span></div><div class="tt">🏅 第 ${w} 週完成！看一下答錯的題目</div><div class="soft">紅色是當時選的，綠色是正確答案，看完解析就好，不用重新作答。</div></div>
+  <section class="deck" id="deck"><div class="slide" id="slide"><div class="eyebrow">${esc(eyebrow({w,d:it.d}))}</div>${body}</div>
+  <div class="deckfoot"><div class="dots">${dots}</div><div class="nav2"><button type="button" class="btn ghost" data-act="revprev" ${review.i===0?"disabled":""}>上一題</button>${last?`<button type="button" class="btn primary" data-act="revdone">看完了 ▶</button>`:`<button type="button" class="btn primary" data-act="revnext">下一題</button>`}</div></div></section>`;
+}
+
 /* ---------- 今日關卡 ---------- */
 function renderToday(){
   const cur=current(), {w,d}=cur, dk=deck(w,d), isDone=!!done[dk.id];
@@ -653,7 +679,7 @@ function renderToday(){
     const conf=Array.from({length:18},(_,i)=>`<i style="left:${(i*53)%100}%;background:${colors[i%4]};animation-delay:${(i%6)*.08}s"></i>`).join("");
     const cheer=["你又往前一步了！","今天學的，明天就能用在現場。","每一關都在累積你的管理實力。","穩穩前進，比一次衝很多更有效。","你的成長，就是團隊的成長。"];
     cel=`<div class="celebrate"><div class="confetti">${conf}</div><div class="big">✓</div><h2>${w===0?"準備好了！":"完成這一關"}</h2>
-      ${full?`<span class="badge">🏅 獲得第 ${w} 週徽章</span>`:""}
+      ${full?`<span class="badge">🏅 獲得第 ${w} 週徽章</span>${weekWrong(w).length?"":`<p class="small">本週題目全部答對 ✓</p>`}`:""}
       <p class="cheer">${w===0?"歡迎加入，一起成長！":cheer[weekDone(w)%cheer.length]}</p>
       <p>${nx&&w!==0?"一天一關最剛好，明天打開會自動到下一關。":""}</p>
       <div class="nav2">${nx?`<button type="button" class="btn primary" data-act="gonext">${w===0?"開始第一課":"繼續下一關"}</button>`:""}<button type="button" class="btn" data-act="closecel">回顧這一關</button></div></div>`;
@@ -678,6 +704,8 @@ function renderProg(){
   return `<div class="ring"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="30" fill="none" stroke="var(--line)" stroke-width="8"/><circle cx="38" cy="38" r="30" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C*pct} ${C}" transform="rotate(-90 38 38)"/><text x="38" y="43" text-anchor="middle" font-size="15" font-family="IBM Plex Mono,monospace" fill="var(--ink)">${Math.round(pct*100)}%</text></svg>
     <div class="lbl"><b>${ROLES[role]} · ${n} / ${total} 關</b><span>不用趕進度，一週 3 關就很好</span></div></div>
   <section class="card"><h3>週徽章 · ${medalsN} 枚</h3><div class="medals">${medals}</div></section>
+  ${(()=>{ const L=Array.from({length:WEEKS},(_,i)=>i+1).filter(x=>weekDone(x)===5).map(x=>[x,weekWrong(x).length]); if(!L.length) return "";
+    return `<section class="card"><h3>錯題回顧</h3><p class="small">完成一整週後，可以回來看當時答錯的題目。</p><div class="revlist">${L.map(([x,k])=>k?`<button type="button" class="btn ghost" data-act="wrongs" data-w="${x}">第 ${x} 週 · 錯 ${k} 題</button>`:`<span class="revok">第 ${x} 週 · 全對 ✓</span>`).join("")}</div></section>`; })()}
   <section class="card"><h3>我的筆記</h3><div class="notes">${nlist}</div></section>
   <section class="card"><h3>完整目錄</h3><p class="small">所有週次都可以點開。標日期的週次是建議閱讀時間，想先看也沒問題。</p><div class="cat">${cat}</div></section>
   <section class="card"><h3>備份我的進度</h3><p class="small">進度只存在這支手機的這個瀏覽器。換手機、換瀏覽器或清除資料前，先複製進度碼存起來（例如傳給自己），之後貼回來就能還原，三個職務的進度都在裡面。</p>
@@ -749,7 +777,7 @@ function render(keepScroll){
   document.querySelectorAll("button[data-role]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.role===role));
   document.querySelectorAll("nav.tabs button").forEach(b=>{ if(b.dataset.tab===tab) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
   const v=document.getElementById("view");
-  v.innerHTML = (tab==="today"||tab==="prog"?saveNotice():"") + (tab==="today"?renderToday():tab==="prog"?renderProg():tab==="flow"?renderFlow():renderKnow());
+  v.innerHTML = (tab==="today"||tab==="prog"?saveNotice():"") + (tab==="today"?(review?renderReview():renderToday()):tab==="prog"?renderProg():tab==="flow"?renderFlow():renderKnow());
   const ta=document.getElementById("note"); if(ta) ta.value=notes[ta.dataset.id]||"";
   updateWidget(); fitDeck();
   if (keepScroll){ const s2=document.getElementById("slide"); if(s2) s2.scrollTop=sc; }
@@ -770,8 +798,8 @@ function go(w,d){ viewing={w,d}; slide=0; celebrate=false; tab="today"; render()
 document.addEventListener("click",e=>{
   const tm=e.target.closest(".term"); if(tm){ termSeen++; store.set("termSeen",termSeen); document.getElementById("sheet-t").textContent=tm.dataset.term; document.getElementById("sheet-p").textContent=D.gloss[tm.dataset.term]||""; document.getElementById("sheet").hidden=false; return; }
   if (e.target.id==="sheet"){ document.getElementById("sheet").hidden=true; return; }
-  const r=e.target.closest("button[data-role]"); if(r){ role=r.dataset.role; store.set("role",role); viewing=null; slide=0; celebrate=false; render(); return; }
-  const t=e.target.closest("button[data-tab]"); if(t){ tab=t.dataset.tab; if(tab==="today"){viewing=null;slide=0;celebrate=false;} render(); window.scrollTo(0,0); return; }
+  const r=e.target.closest("button[data-role]"); if(r){ review=null; role=r.dataset.role; store.set("role",role); viewing=null; slide=0; celebrate=false; render(); return; }
+  const t=e.target.closest("button[data-tab]"); if(t){ tab=t.dataset.tab; if(tab==="today"){viewing=null;slide=0;celebrate=false;review=null;} render(); window.scrollTo(0,0); return; }
   const fl=e.target.closest("button[data-flow]"); if(fl){ flowKey=fl.dataset.flow; render(); return; }
   const k=e.target.closest("button[data-k]"); if(k){ kTab=k.dataset.k; render(); return; }
   const a=e.target.closest("[data-act]"); if(!a||a.disabled) return;
@@ -784,8 +812,14 @@ document.addEventListener("click",e=>{
   else if (act==="done"){
     const id=a.dataset.id, c=current(); if (done[id]){ const n=nextUnfinished(); if(n) go(n.w,n.d); return; }
     done[id]=1; store.set("done",done); try{ navigator.storage&&navigator.storage.persist&&navigator.storage.persist(); }catch(e){} store.set("todayDone",{date:todayStr,role,w:c.w,d:c.d});
-    viewing={w:c.w,d:c.d}; celebrate=true; render();
+    viewing={w:c.w,d:c.d};
+    if (c.w>0 && weekDone(c.w)===5 && !revSeen[role+"-"+c.w] && weekWrong(c.w).length){ revSeen[role+"-"+c.w]=1; store.set("revSeen",revSeen); review={w:c.w,i:0}; celebrate=false; render(); window.scrollTo(0,0); return; }
+    celebrate=true; render();
   }
+  else if (act==="revnext"){ review.i++; render(); }
+  else if (act==="revprev"){ review.i=Math.max(0,review.i-1); render(); }
+  else if (act==="revdone"){ review=null; const n=nextUnfinished(); if(n) go(n.w,n.d); else { viewing=null; slide=0; render(); } }
+  else if (act==="wrongs"){ review={w:+a.dataset.w,i:0}; tab="today"; render(); window.scrollTo(0,0); }
   else if (act==="goseq"){ go(+a.dataset.w, +a.dataset.d); }
   else if (act==="gonext"){ const n=nextUnfinished(); if(n){ store.set("todayDone",{date:todayStr,role,w:n.w,d:n.d}); go(n.w,n.d); } }
   else if (act==="tabtoday"){ viewing=null; slide=0; celebrate=false; render(); }
