@@ -418,6 +418,8 @@ ol.toc span{font-family:var(--f-mono);color:var(--accent);min-width:2.4em}
 .pseg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .nextm{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center}
 .nextm .nm2 svg{width:64px;height:auto;display:block}
+.thm{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:2px 8px;font:500 .75rem var(--f-body);cursor:pointer;margin-right:4px}
+.hdtools{display:flex;align-items:center;gap:4px;margin-left:auto}
 
 .lead{margin:0}
 .adv.ex{border-left-color:var(--ok)}
@@ -434,7 +436,7 @@ ol.toc span{font-family:var(--f-mono);color:var(--accent);min-width:2.4em}
 <div class="wrap">
   <header>
     <div class="brand"><h1>雪坊幹部學堂</h1><span class="sp"></span>
-      <div class="fs" role="group" aria-label="字級"><button type="button" data-act="fs" data-v="-1" aria-label="字變小">A−</button><button type="button" data-act="fs" data-v="1" aria-label="字變大">A＋</button></div></div>
+      <div class="hdtools"><button type="button" class="thm" data-act="thm" aria-label="切換深淺色"></button><div class="fs" role="group" aria-label="字級"><button type="button" data-act="fs" data-v="-1" aria-label="字變小">A−</button><button type="button" data-act="fs" data-v="1" aria-label="字變大">A＋</button></div></div></div>
     <div class="seg" role="group" aria-label="選擇職務">
       <button type="button" data-role="prod">生管</button>
       <button type="button" data-role="qa">衛管</button>
@@ -470,6 +472,10 @@ let ptab = null;
 let viewing = null, slide = 0, celebrate = false;
 let done = store.get("done",{}), notes = store.get("notes",{}), quiz = store.get("quiz",{}), flips = store.get("flips",{}), orders = store.get("orders",{});
 let fs = store.get("fs",1);
+let thm = store.get("thm","auto");
+const THM={auto:["跟隨手機","M12 3a9 9 0 1 0 0 18z M12 3a9 9 0 0 1 0 18"],light:["淺色","M12 7a5 5 0 1 0 0 10a5 5 0 1 0 0-10z M12 1v2 M12 21v2 M4.2 4.2l1.4 1.4 M18.4 18.4l1.4 1.4 M1 12h2 M21 12h2 M4.2 19.8l1.4-1.4 M18.4 5.6l1.4-1.4"],dark:["深色","M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"]};
+function applyTheme(){ const r=document.documentElement; if(thm==="auto") delete r.dataset.theme; else r.dataset.theme=thm;
+  const b=document.querySelector("[data-act=thm]"); if(b){ const [n,d]=THM[thm]; b.innerHTML=`<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg><span>${n}</span>`; b.setAttribute("aria-label","深淺色："+n+"，點一下切換"); } }
 let termSeen = store.get("termSeen",0);
 let review = null, revSeen = store.get("revSeen",{});
 const FS = [0.9,1,1.12,1.25];
@@ -632,7 +638,7 @@ function orientSlides(){
     <h3>這套課程</h3><p>只聚焦三條產線：優格、優格冰淇淋、果醬。三個職務每天都在守護這三條線，從排程、食安到現場，每一關都和你手上的工作有關。</p>
     <p class="small">課程中的案例、人物與數字都是<b>教學用的虛構情境</b>，不代表雪坊的實際狀況。</p>${factoryHTML(true)}`,
     `<h3>這 16 週你會學到</h3><ol class="toc">${D.weeks[role].map((t,i)=>`<li><span>W${i+1}</span>${esc(t)}</li>`).join("")}</ol>`,
-    `<h3>怎麼使用</h3><ul class="pts"><li><span>每週一個主題、5 關：概念、應用、練習、共同課、案例。建議一天一關，每關約 2 分鐘；所有週次都可以先看，進度會自動記在這支手機。</span></li><li><span>標「進階」的內容給資深同仁挑戰，新人可以先略過。</span></li><li><span>畫底線的名詞點一下有白話解釋；右上角 A− A＋ 可以調整字級。</span></li><li><span>進度和筆記只存在你自己的手機，別人看不到。</span></li></ul>
+    `<h3>怎麼使用</h3><ul class="pts"><li><span>每週一個主題、5 關：概念、應用、練習、共同課、案例。建議一天一關，每關約 2 分鐘；所有週次都可以先看，進度會自動記在這支手機。</span></li><li><span>標「進階」的內容給資深同仁挑戰，新人可以先略過。</span></li><li><span>畫底線的名詞點一下有白話解釋；右上角可以切換深淺色，A− A＋ 可以調整字級。</span></li><li><span>進度和筆記只存在你自己的手機，別人看不到。</span></li></ul>
      <div class="home"><b>把學堂放到手機桌面</b><div><span>iPhone（Safari）</span>點下方「分享」→「加入主畫面」</div><div><span>Android（Chrome）</span>點右上「⋮」→「加到主畫面」</div></div>`
   ];
 }
@@ -885,7 +891,7 @@ function saveNotice(){
 function render(keepScroll){
   const sc = keepScroll ? (document.getElementById("slide")?.scrollTop||0) : 0;
   document.documentElement.dataset.role=(tab==="flow"||tab==="know")?"common":role;
-  document.documentElement.style.fontSize=(FS[fs]*100)+"%";
+  document.documentElement.style.fontSize=(FS[fs]*100)+"%"; applyTheme();
   document.querySelectorAll("button[data-role]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.role===role));
   document.querySelectorAll("nav.tabs button").forEach(b=>{ if(b.dataset.tab===tab) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
   const v=document.getElementById("view");
@@ -917,6 +923,7 @@ document.addEventListener("click",e=>{
   const a=e.target.closest("[data-act]"); if(!a||a.disabled) return;
   const act=a.dataset.act;
   if (act==="closesheet") document.getElementById("sheet").hidden=true;
+  else if (act==="thm"){ const o=["auto","light","dark"]; thm=o[(o.indexOf(thm)+1)%3]; store.set("thm",thm); applyTheme(); }
   else if (act==="fs"){ fs=Math.max(0,Math.min(FS.length-1,fs+(+a.dataset.v))); store.set("fs",fs); render(true); }
   else if (act==="next"){ slide++; render(); }
   else if (act==="prev"){ slide=Math.max(0,slide-1); render(); }
