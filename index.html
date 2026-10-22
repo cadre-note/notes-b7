@@ -472,10 +472,12 @@ let ptab = null;
 let viewing = null, slide = 0, celebrate = false;
 let done = store.get("done",{}), notes = store.get("notes",{}), quiz = store.get("quiz",{}), flips = store.get("flips",{}), orders = store.get("orders",{});
 let fs = store.get("fs",1);
-let thm = store.get("thm","auto");
-const THM={auto:["跟隨手機","M12 3a9 9 0 1 0 0 18z M12 3a9 9 0 0 1 0 18"],light:["淺色","M12 7a5 5 0 1 0 0 10a5 5 0 1 0 0-10z M12 1v2 M12 21v2 M4.2 4.2l1.4 1.4 M18.4 18.4l1.4 1.4 M1 12h2 M21 12h2 M4.2 19.8l1.4-1.4 M18.4 5.6l1.4-1.4"],dark:["深色","M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"]};
-function applyTheme(){ const r=document.documentElement; if(thm==="auto") delete r.dataset.theme; else r.dataset.theme=thm;
-  const b=document.querySelector("[data-act=thm]"); if(b){ const [n,d]=THM[thm]; b.innerHTML=`<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg><span>${n}</span>`; b.setAttribute("aria-label","深淺色："+n+"，點一下切換"); } }
+let thm = store.get("thm",null);
+const THM={light:["淺色","M12 7a5 5 0 1 0 0 10a5 5 0 1 0 0-10z M12 1v2 M12 21v2 M4.2 4.2l1.4 1.4 M18.4 18.4l1.4 1.4 M1 12h2 M21 12h2 M4.2 19.8l1.4-1.4 M18.4 5.6l1.4-1.4"],dark:["深色","M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"]};
+/* 只有淺色／深色兩種；沒選過時跟著手機，按鈕顯示目前的狀態 */
+function curTheme(){ if(thm==="light"||thm==="dark") return thm; try{ return matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"; }catch(e){ return "light"; } }
+function applyTheme(){ const r=document.documentElement; if(thm==="light"||thm==="dark") r.dataset.theme=thm; else delete r.dataset.theme;
+  const b=document.querySelector("[data-act=thm]"); if(b){ const c=curTheme(), [n,d]=THM[c]; b.innerHTML=`<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg><span>${n}</span>`; b.setAttribute("aria-label","目前"+n+"，點一下切換成"+(c==="dark"?"淺色":"深色")); } }
 let termSeen = store.get("termSeen",0);
 let review = null, revSeen = store.get("revSeen",{});
 const FS = [0.9,1,1.12,1.25];
@@ -923,7 +925,7 @@ document.addEventListener("click",e=>{
   const a=e.target.closest("[data-act]"); if(!a||a.disabled) return;
   const act=a.dataset.act;
   if (act==="closesheet") document.getElementById("sheet").hidden=true;
-  else if (act==="thm"){ const o=["auto","light","dark"]; thm=o[(o.indexOf(thm)+1)%3]; store.set("thm",thm); applyTheme(); }
+  else if (act==="thm"){ thm=curTheme()==="dark"?"light":"dark"; store.set("thm",thm); applyTheme(); }
   else if (act==="fs"){ fs=Math.max(0,Math.min(FS.length-1,fs+(+a.dataset.v))); store.set("fs",fs); render(true); }
   else if (act==="next"){ slide++; render(); }
   else if (act==="prev"){ slide=Math.max(0,slide-1); render(); }
