@@ -859,16 +859,19 @@ function renderFlow(){
 function fsHTML(){
   if (!FSI.length) return `<section class="card"><h3>食安事件</h3><p class="small">每週二更新一則可以查證的真實食安事件，整理成「發生什麼、根本原因、對應要求、如果在我們廠怎麼擋」。第一則預計 10/20（二）上線。</p></section>`;
   const s=[...FSI].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,6);
-  return `<h3>食安事件</h3>`+s.map(e=>`<article class="reading fsx"><span class="src">${esc(e.date)} · ${esc(e.source||"")}</span>${e.url?`<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.title)}</a>`:`<b>${esc(e.title)}</b>`}
+  return `<h3>食安事件</h3><p class="small">每週二更新一則可以查證的真實食安事件。</p>`+s.map(e=>`<article class="reading fsx"><span class="src">${esc(e.date)} · ${esc(e.source||"")}</span>${e.url?`<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.title)}</a>`:`<b>${esc(e.title)}</b>`}
     <dl>${[["發生什麼",e.happened],["根本原因",e.cause],["對應要求",e.req],["在我們廠怎麼擋",e.guard]].filter(x=>x[1]).map(x=>`<dt>${x[0]}</dt><dd>${esc(x[1])}</dd>`).join("")}</dl>${e.q?`<div class="rq"><b>討論：</b>${esc(e.q)}</div>`:""}</article>`).join("");
 }
 function renderKnow(){
   const seg=[["news","每週更新"],["law","勞基法"],["tools","管理工具"]].map(([k,n])=>`<button type="button" data-k="${k}" aria-pressed="${k===kTab}">${n}</button>`).join("");
   let body="";
   if (kTab==="news"){
-    body=`${fsHTML()}
-      <h3>推薦閱讀</h3><p class="small">每週一、三、五更新。摘要是重點整理，完整內容請點標題閱讀原文。</p>`+
+    /* 食安事件（每週二）與推薦閱讀（一三五）：哪一區有比較新的內容，就放在上面 */
+    const fsH=`${fsHTML()}`;
+    const rdH=`<h3>推薦閱讀</h3><p class="small">每週一、三、五更新。摘要是重點整理，完整內容請點標題閱讀原文。</p>`+
       D.readings.map(r=>`<article class="reading"><span class="src">${esc(r.date)} · ${esc(r.source)}</span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a><p>${esc(r.sum)}</p><div class="rq"><b>討論：</b>${esc(r.q)}</div></article>`).join("");
+    const newest=a=>(a||[]).reduce((m,x)=>String(x.date||"")>m?String(x.date):m,"");
+    body = newest(D.readings)>newest(typeof FSI!=="undefined"?FSI:[]) ? rdH+fsH : fsH+rdH;
   } else {
     const list=kTab==="law"?D.know.law:D.know.tools, S=new Set();
     body=`<div class="kcards">${list.map(c=>`<div class="kcard"><h4>${esc(c.t)}</h4><ul>${c.i.map(x=>`<li>${gl(x,S)}</li>`).join("")}</ul></div>`).join("")}</div>`;
