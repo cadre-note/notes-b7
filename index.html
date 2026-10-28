@@ -1527,7 +1527,7 @@ function panelHTML(){
   const nu=(typeof nextUnfinished==="function")?nextUnfinished():null;
   return `<div class="is-head"><div class="t"><span class="is-eye">${RN[role]} · 第 ${w} 週 · ${st}/5 關</span><b>${esc(spec.n)}</b></div><button type="button" class="is-x" data-isle="close" aria-label="關閉小島">✕</button></div>
     ${tabs}${alertsHTML()}${body}
-    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-6</p>`;
+    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-7</p>`;
 }
 function ensureHost(){ let h=document.getElementById("isle"); if(!h){ h=document.createElement("div"); h.id="isle"; h.hidden=true; h.innerHTML=`<div class="is-panel" role="dialog" aria-modal="true" aria-label="我的小島" id="isle-panel"></div>`; document.body.appendChild(h); }
   return h; }
@@ -1572,6 +1572,7 @@ window.isleStripHTML=function(){
 };
 window.isleCelHTML=function(w,d,conf){
   if(!w || !STORE_OK) return `<div class="confetti">${conf}</div><div class="big">✓</div>`;
+  markSeen();
   const st=stageOf(role,w); PR={cx:180,cy:128,a:150,b:75}; const c=P(.5,.5,.32);
   return `<div class="is-cel">${siteSVG(w,{an:st,vb:`${f1(c[0]-150)} ${f1(c[1]-112)} 300 196`,noTap:true,noInsp:true,stage:st})}<span class="is-celtag">${esc(ISLE_B[role][w-1].n)} · ${STG[Math.max(0,st-1)][1]}${st===5?"完工":""}</span></div>`;
 };
@@ -1580,8 +1581,12 @@ window.isleAreaCard=function(n,total){
   let nf=0; for(let x=1;x<=WEEKS;x++) if(stageOf(role,x)===5) nf++;
   return `<button type="button" class="is-areacard" data-isle="openarea" aria-label="看整座園區">${areaSVG()}<span><b>${RN[role]} · ${n} / ${total} 關</b><span>已蓋好 ${nf} / 16 棟 · 樹 ${trees} 棵 · 不用趕進度，一週 3 關就很好</span></span></button>`;
 };
-window.isleBoot=function(){ if(!STORE_OK) return; ensureHost(); evState(); inspState();
-  if(store.get("isleDay","")!==todayStr){ store.set("isleDay",todayStr); openIsle("site"); } };
+/* 小島首頁只在「有新東西」時出現：工地有變化、或有還沒處理的停電／稽查員（2026-10-28 改，原本是每天第一次） */
+function isleSig(){ const w=curWeek(), ev=evState(), ins=inspState();
+  return [role,w,stageOf(role,w),ev&&!ev.done?ev.key:"",ins&&!ins.done?ins.key:""].join("|"); }
+function markSeen(){ try{ store.set("isleSig",isleSig()); }catch(e){} }
+window.isleBoot=function(){ if(!STORE_OK) return; ensureHost();
+  if(store.get("isleSig","")!==isleSig()){ markSeen(); openIsle("site"); } };
 window.isleCodeSuffix=function(){ return trees>0?`~T${trees}`:""; };
 window.isleCodeRestore=function(c){ const m=String(c).match(/~T(\d{1,3})$/); if(m){ trees=Math.max(trees,+m[1]); store.set("isleTrees",trees); return c.slice(0,m.index); } return c; };
 
@@ -1608,7 +1613,7 @@ document.addEventListener("click",e=>{
     if(ok){ const sc=document.getElementById("is-scene"); if(sc){ sc.innerHTML=sceneSVG(kind,s,true); sc.scrollIntoView({block:"nearest",behavior:"smooth"}); } }
     document.getElementById("is-fb").innerHTML=`<div class="is-fbx ${ok?"is-late":""}"><b>${msg}</b>${esc(exp)}</div><button type="button" class="is-btn primary ${ok?"is-late":""}" data-isle="${!ok&&kind==="ev"?"ev":"qdone"}">${!ok&&kind==="ev"?"再試一次":(qOut?"回到課程":"回到小島")}</button>`;
     return; }
-  if(act==="qdone"){ qClose(); return; }
+  if(act==="qdone"){ markSeen(); qClose(); return; }
 });
 document.addEventListener("keydown",e=>{
   const t=e.target.closest&&e.target.closest('[data-isle][role="button"]');
