@@ -420,6 +420,101 @@ ol.toc span{font-family:var(--f-mono);color:var(--accent);min-width:2.4em}
 .nextm .nm2 svg{width:64px;height:auto;display:block}
 .thm{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:2px 8px;font:500 .75rem var(--f-body);cursor:pointer;margin-right:4px}
 .hdtools{display:flex;align-items:center;gap:4px;margin-left:auto}
+/* ===== 本週工地（小島）：色票跟著學堂的深淺色 ===== */
+:root{--is-prod:#3B5BDB;--is-qa:#1E8A5A;--is-line:#D2602A;--is-sky-a:#CBE8F3;--is-sky-b:#9FD0E4;
+  --is-grass:#B3DA90;--is-grass-hi:#C3E3A3;--is-soil:#D2B489;--is-soil-dk:#A88658;--is-soil-ink:#5A472F;--is-rock:#A2876A;--is-road:#E6D9BA;
+  --is-shadow:rgba(20,30,20,.20);--is-warn:#E5484D}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--is-prod:#7F97F5;--is-qa:#3FB27C;--is-line:#F08A57;--is-sky-a:#1B3A52;--is-sky-b:#102739;
+  --is-grass:#4F7D45;--is-grass-hi:#5F8E52;--is-soil:#7A6143;--is-soil-dk:#5A472F;--is-soil-ink:#E9DCC4;--is-rock:#4E3F2B;--is-road:#6E6148;--is-shadow:rgba(0,0,0,.35);--is-warn:#FF6B6F}}
+:root[data-theme="dark"]{--is-prod:#7F97F5;--is-qa:#3FB27C;--is-line:#F08A57;--is-sky-a:#1B3A52;--is-sky-b:#102739;
+  --is-grass:#4F7D45;--is-grass-hi:#5F8E52;--is-soil:#7A6143;--is-soil-dk:#5A472F;--is-soil-ink:#E9DCC4;--is-rock:#4E3F2B;--is-road:#6E6148;--is-shadow:rgba(0,0,0,.35);--is-warn:#FF6B6F}
+html.is-lock body{overflow:hidden}
+#isle{position:fixed;inset:0;z-index:40;background:var(--tint);overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:calc(10px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.is-panel{max-width:460px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:grid}
+.is-head{display:flex;align-items:center;gap:10px;padding:12px 14px 6px}
+.is-head .t{min-width:0;flex:1;display:grid}
+.is-head b{font-family:var(--f-display);font-size:1.2rem;line-height:1.3}
+.is-eye{font:500 .74rem var(--f-mono);letter-spacing:.06em;color:var(--accent)}
+.is-x{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:1rem;cursor:pointer;flex:none}
+.is-seg{display:flex;gap:4px;margin:2px 14px 4px;background:var(--tint);border:1px solid var(--line);border-radius:999px;padding:3px}
+.is-seg button{flex:1;border:0;background:transparent;color:var(--muted);font:500 .88rem var(--f-body);padding:6px 4px;border-radius:999px;cursor:pointer}
+.is-seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.is-view svg{display:block;width:100%;height:auto}
+.is-alert{margin:6px 14px 0;border-radius:12px;padding:8px 12px;display:flex;gap:8px;align-items:center;font-size:.86rem;line-height:1.5;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-align:left}
+.is-alert.ev{border-color:var(--is-warn);background:color-mix(in srgb,var(--is-warn) 9%,var(--surface))}
+.is-alert.in{border-color:var(--accent);background:var(--accent-soft)}
+.is-alert .dot,.is-dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--is-warn);animation:is-pulse 1.4s ease-in-out infinite;display:inline-block}
+.is-alert.in .dot{background:var(--accent)}
+.is-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:8px 12px 2px}
+.is-steps div{display:grid;justify-items:center;gap:2px;text-align:center;font-size:.7rem;color:var(--muted);line-height:1.3}
+.is-steps i{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font:500 .7rem var(--f-mono);font-style:normal;color:var(--muted);background:var(--surface)}
+.is-steps .on i{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.is-steps .now i{border-color:var(--accent);color:var(--accent)}
+.is-steps .on,.is-steps .now{color:var(--ink)}
+.is-tap{padding:2px 14px 0;font-size:.82rem;color:var(--muted);text-align:center;margin:0}
+.is-ms{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px 14px 0}
+.is-ms div{border:1px solid var(--line);border-radius:12px;padding:6px 4px;text-align:center;font-size:.72rem;color:var(--muted);line-height:1.35}
+.is-ms div b{display:block;font-size:.78rem;color:var(--ink)}
+.is-ms div.on{border-color:var(--accent);background:var(--accent-soft)}
+.is-go{margin:12px 14px 14px;border:0;border-radius:16px;padding:12px 14px;background:linear-gradient(125deg,var(--accent),var(--accent-deep));color:var(--on-accent);display:grid;gap:2px;text-align:left;cursor:pointer}
+.is-go b{font-family:var(--f-display);font-size:1.12rem}
+.is-go span{font-size:.82rem;opacity:.92}
+#isle-q{position:fixed;inset:0;z-index:45;background:rgba(10,16,24,.45);display:grid;align-items:end}
+.is-qbox{background:var(--surface);color:var(--ink);border-radius:20px 20px 0 0;max-width:460px;width:100%;margin:0 auto;box-sizing:border-box;max-height:88vh;overflow:auto;
+  padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:grid;gap:10px}
+.is-qbox h3{font-family:var(--f-display);margin:0;font-size:1.08rem;line-height:1.45;text-wrap:balance}
+.is-who{display:flex;gap:10px;align-items:center}
+.is-who svg{width:44px;height:44px;flex:none}
+.is-opts{display:grid;gap:8px}
+.is-opts button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 12px;text-align:left;font:inherit;font-size:.94rem;line-height:1.5;cursor:pointer}
+.is-opts button.ok{border-color:var(--accent);background:var(--accent-soft)}
+.is-opts button.no{border-color:var(--is-warn);background:color-mix(in srgb,var(--is-warn) 9%,var(--surface))}
+.is-opts button:disabled{cursor:default;color:var(--ink)}
+.is-fbx{border-radius:12px;padding:10px 12px;font-size:.9rem;line-height:1.6;background:var(--tint)}
+.is-fbx b{display:block;margin-bottom:2px}
+.is-take{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 12px 12px 0;padding:10px 12px;font-family:var(--f-display);font-size:1.05rem;line-height:1.55}
+.is-btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:9px 14px;font:500 .95rem var(--f-body);cursor:pointer;justify-self:start}
+.is-btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.is-strip{display:grid;grid-template-columns:118px 1fr;align-items:center;gap:10px;padding:6px 12px 6px 6px;border:1px solid var(--line);background:var(--surface);border-radius:16px;text-align:left;color:var(--ink);cursor:pointer;width:100%;margin-bottom:10px;font:inherit}
+.is-strip svg{width:118px;height:auto;border-radius:11px;display:block}
+.is-st{display:grid;min-width:0}
+.is-st b{font-family:var(--f-display);font-size:.98rem;line-height:1.3}
+.is-st span{font-size:.78rem;color:var(--muted)}
+.is-st em{font-style:normal;color:var(--accent);font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:6px}
+.is-cel{width:100%;display:grid;justify-items:center;gap:4px}
+.is-cel svg{width:100%;max-width:360px;max-height:34vh;height:auto;border-radius:14px;display:block}
+.is-celtag{font-size:.82rem;color:var(--accent);font-weight:700}
+.celebrate:has(.is-cel){justify-content:flex-start;overflow-y:auto;gap:8px;padding:14px}
+.is-areacard{display:grid;gap:4px;width:100%;border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:6px 6px 10px;cursor:pointer;color:var(--ink);text-align:center;font:inherit;margin-bottom:12px}
+.is-areacard svg{width:100%;height:auto;border-radius:12px;display:block}
+.is-areacard b{display:block;font-size:.95rem}
+.is-areacard span span{font-size:.78rem;color:var(--muted)}
+.is-bob{animation:is-bob 1.8s ease-in-out infinite}
+.is-hop{animation:is-hop 1.2s ease-in-out infinite}
+.is-blink{animation:is-blink 1s steps(2) infinite}
+.is-fan{animation:is-spin 2.4s linear infinite;transform-box:fill-box;transform-origin:center}
+.is-sway{animation:is-sway 3s ease-in-out infinite;transform-box:fill-box;transform-origin:0 100%}
+.is-walk{animation:is-walk 6s linear infinite}.is-walk.w2{animation-delay:-3s}
+.is-steam circle{animation:is-steam 3.2s ease-out infinite;transform-box:fill-box;transform-origin:center}
+.is-steam circle:nth-child(2){animation-delay:1.06s}.is-steam circle:nth-child(3){animation-delay:2.12s}
+.is-grow{animation:is-grow .8s cubic-bezier(.2,1.45,.4,1) .1s both;transform-box:fill-box;transform-origin:50% 100%}
+.is-drop{animation:is-drop .7s cubic-bezier(.3,1.4,.5,1) .5s both}
+.is-glow{animation:is-glow 1.2s ease-out .3s both}
+.is-puff circle{animation:is-puff 1.1s ease-out .55s both;transform-box:fill-box;transform-origin:center}
+@keyframes is-pulse{50%{transform:scale(1.5);opacity:.5}}
+@keyframes is-bob{50%{transform:translateY(-3px)}}
+@keyframes is-hop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+@keyframes is-blink{50%{opacity:.25}}
+@keyframes is-spin{to{transform:rotate(360deg)}}
+@keyframes is-sway{50%{transform:skewY(-4deg)}}
+@keyframes is-walk{0%{transform:translate(0,0);opacity:0}10%{opacity:1}85%{opacity:1}100%{transform:translate(-26px,-13px);opacity:0}}
+@keyframes is-steam{0%{opacity:0;transform:translate(0,0) scale(.5)}20%{opacity:.75}100%{opacity:0;transform:translate(6px,-22px) scale(1.7)}}
+@keyframes is-grow{from{transform:scaleY(.12);opacity:.15}}
+@keyframes is-drop{from{transform:translateY(-40px);opacity:0}}
+@keyframes is-glow{from{opacity:0}}
+@keyframes is-puff{0%{opacity:0;transform:scale(.3)}30%{opacity:.9}100%{opacity:0;transform:scale(1.9) translateY(-8px)}}
+@media (prefers-reduced-motion: reduce){.is-bob,.is-hop,.is-blink,.is-fan,.is-sway,.is-walk,.is-steam circle,.is-grow,.is-drop,.is-glow,.is-puff circle,.is-alert .dot,.is-dot{animation:none}.is-puff{display:none}}
 
 .lead{margin:0}
 .adv.ex{border-left-color:var(--ok)}
@@ -711,13 +806,13 @@ function renderToday(){
     const colors=["var(--accent)","var(--ok)","var(--warn)","var(--accent-deep)"];
     const conf=Array.from({length:18},(_,i)=>`<i style="left:${(i*53)%100}%;background:${colors[i%4]};animation-delay:${(i%6)*.08}s"></i>`).join("");
     const cheer=["你又往前一步了！","今天學的，明天就能用在現場。","每一關都在累積你的管理實力。","穩穩前進，比一次衝很多更有效。","你的成長，就是團隊的成長。"];
-    cel=`<div class="celebrate"><div class="confetti">${conf}</div><div class="big">✓</div><h2>${w===0?"準備好了！":"完成這一關"}</h2>
+    cel=`<div class="celebrate">${isleCelHTML(w,d,conf)}<h2>${w===0?"準備好了！":"完成這一關"}</h2>
       ${full?(()=>{ medalUid=0; const t=weekTier(w); return `<div class="mwin">${medalSVG(w,t,true)}</div><span class="badge">獲得第 ${w} 週${MET[t].n}牌</span><p class="small">${tierHint(w,t)}</p>`; })():""}
       <p class="cheer">${w===0?"歡迎加入，一起成長！":cheer[weekDone(w)%cheer.length]}</p>
       <p>${nx&&w!==0?"一天一關最剛好，明天打開會自動到下一關。":""}</p>
       <div class="nav2">${nx?`<button type="button" class="btn primary" data-act="gonext">${w===0?"開始第一課":"繼續下一關"}</button>`:""}<button type="button" class="btn" data-act="closecel">回顧這一關</button></div></div>`;
   }
-  return `${medalNoteHTML()}${hero}<section class="deck" id="deck"><div class="slide" id="slide">${dk.slides[slide]}${(termSeen<5&&/class="term"/.test(dk.slides[slide]))?`<p class="termhint">💡 點有虛底線的詞，可以看白話解釋</p>`:""}</div>${foot}${cel}</section>`;
+  return `${medalNoteHTML()}${w>0?isleStripHTML():""}${hero}<section class="deck" id="deck"><div class="slide" id="slide">${dk.slides[slide]}${(termSeen<5&&/class="term"/.test(dk.slides[slide]))?`<p class="termhint">💡 點有虛底線的詞，可以看白話解釋</p>`:""}</div>${foot}${cel}</section>`;
 }
 
 /* ---------- 週獎章（A 獎章：刻主題圖案、銅銀金、職務色緞帶） ---------- */
@@ -825,7 +920,7 @@ function renderProg(){
   const revPart=(()=>{ const L=Array.from({length:WEEKS},(_,i)=>i+1).filter(x=>weekDone(x)===5).map(x=>[x,weekWrong(x).length]); if(!L.length) return "";
     return `<section class="card"><h3>錯題回顧</h3><p class="small">完成一整週後，可以回來看當時答錯的題目。</p><div class="revlist">${L.map(([x,k])=>k?`<button type="button" class="btn ghost" data-act="wrongs" data-w="${x}">第 ${x} 週 · 錯 ${k} 題</button>`:`<span class="revok">第 ${x} 週 · 全對 ✓</span>`).join("")}</div></section>`; })();
   const notePart=`<section class="card"><h3>我的筆記</h3><div class="notes">${nlist}</div></section>`;
-  const progPart=`${firstHint}${ringHTML}${revPart}
+  const progPart=`${firstHint}${isleAreaCard(n,total)||ringHTML}${revPart}
   <section class="card"><h3>完整目錄</h3><p class="small">所有週次都可以點開。標日期的週次是建議閱讀時間，想先看也沒問題。</p><div class="cat">${cat}</div></section>
   <section class="card"><h3>備份我的進度</h3><p class="small">進度只存在這支手機的這個瀏覽器。換手機、換瀏覽器或清除資料前，先複製進度碼存起來（例如傳給自己），之後貼回來就能還原，三個職務的進度都在裡面。</p>
     <div class="bk"><code id="bk-code">${esc(backupCode())}</code><button type="button" class="btn ghost" data-act="bkcopy">複製進度碼</button></div>
@@ -837,8 +932,8 @@ function renderProg(){
 /* ---------- 進度碼 ---------- */
 function bkKeys(){ const k=["ori-prod","ori-qa","ori-line"]; for(const r of ["prod","qa","line"]) for(let w=1;w<=WEEKS;w++) for(let d=0;d<3;d++) k.push(`${r}-${w}-${d}`); for(let w=1;w<=WEEKS;w++){ k.push(`T-${w}`); k.push(`C-${w}`); } return k; }
 function backupCode(){ const K=bkKeys(), by=new Uint8Array(Math.ceil(K.length/8)); K.forEach((k,i)=>{ if(done[k]) by[i>>3]|=1<<(i&7); });
-  let b=""; by.forEach(x=>b+=String.fromCharCode(x)); return "XF1-"+btoa(b).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
-function restoreCode(c){ c=String(c||"").trim(); if(!/^XF1-[A-Za-z0-9_-]+$/.test(c)) return -1;
+  let b=""; by.forEach(x=>b+=String.fromCharCode(x)); return "XF1-"+btoa(b).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")+isleCodeSuffix(); }
+function restoreCode(c){ c=isleCodeRestore(String(c||"").trim()); if(!/^XF1-[A-Za-z0-9_-]+$/.test(c)) return -1;
   let b; try{ b=atob(c.slice(4).replace(/-/g,"+").replace(/_/g,"/")); }catch(e){ return -1; }
   const K=bkKeys(); if(b.length!==Math.ceil(K.length/8)) return -1; let n=0;
   K.forEach((k,i)=>{ if((b.charCodeAt(i>>3)>>(i&7))&1){ if(!done[k]) n++; done[k]=1; } }); store.set("done",done); return n; }
@@ -974,8 +1069,493 @@ document.addEventListener("pointerup",e=>{
   const c=current(), n=deck(c.w,c.d).slides.length;
   if (dx<0 && slide<n-1){ slide++; render(); } else if (dx>0 && slide>0){ slide--; render(); }
 });
+/* ==========================================================
+   雪坊幹部學堂：本週工地（2.5D 微縮工廠）
+   build_full.py 會把這個檔案插進 v5_body.html 的主程式裡，
+   直接讀現有的進度（done、quiz、weekDone、weekTier），不改任何既有 key。
+   新增的紀錄：xf5-isleDay（今天看過首頁）、xf5-isleTrees（稽查員送的樹）、
+   xf5-isleInsp（本週稽查員）、xf5-isleEv（停電事件）。
+   ========================================================== */
+(function(){
+const ISLE_ROLES=["prod","qa","line"];
+/* 48 棟：b＝基本外型，s＝屋頂招牌（沒寫就用該週獎章刻紋），f＝外型特徵 */
+const ISLE_B={
+ qa:[
+  {n:"優格發酵館",b:"lab2",s:"cup",f:["tanks"]},
+  {n:"優格冰工坊",b:"hall",s:"cone",f:["freezer","awning"]},
+  {n:"果醬熬煮房",b:"shed",s:"jar",f:["steam","crates"]},
+  {n:"微生物檢驗室",b:"lab2",s:"dome",f:["autoclave"]},
+  {n:"更衣洗手站",b:"hall",f:["basins","airlock"]},
+  {n:"環境監測站",b:"plaza",f:["sampleFlags","vane"]},
+  {n:"原料驗收棚",b:"shed",f:["drums","truck"]},
+  {n:"校正中心",b:"lab2",f:["thermoTower","weights"]},
+  {n:"偏離處置中心",b:"hall",f:["hatch"]},
+  {n:"清潔用水站",b:"shed",f:["waterTower","bugLamp"]},
+  {n:"標示資訊室",b:"hall",f:["board:tag"]},
+  {n:"過敏原專區",b:"lab2",f:["colorDoors","partition"]},
+  {n:"追溯回收中心",b:"shed",f:["truck","board:cycle"]},
+  {n:"成品放行室",b:"lab2",f:["sampleFridge","gateBar"]},
+  {n:"稽查接待中心",b:"hall",f:["flagpole","bigWindow"]},
+  {n:"教育訓練館",b:"hall",f:["benches"]}],
+ prod:[
+  {n:"BOM 資料中心",b:"lab2",f:["cabinets"]},
+  {n:"進出貨轉運站",b:"shed",f:["truck","dockR"]},
+  {n:"工時鐘塔",b:"tower",f:["clockFace"]},
+  {n:"人力調度中心",b:"hall",f:["board:people"]},
+  {n:"節拍產線館",b:"saw",f:["conveyor"]},
+  {n:"瓶頸觀測塔",b:"tower",f:["funnel"]},
+  {n:"食安排程室",b:"lab2",f:["board:calendar"]},
+  {n:"快速換線工坊",b:"saw",f:["jigRack"]},
+  {n:"產銷協調中心",b:"twin",f:[]},
+  {n:"異常連鎖館",b:"hall",f:["dominoes"]},
+  {n:"需求預測氣象站",b:"tower",f:["vane","board:chart"]},
+  {n:"安全庫存倉",b:"shed",f:["rack"]},
+  {n:"先進先出倉",b:"shed",f:["slopeRack"]},
+  {n:"批號檔案庫",b:"lab2",f:["cabinets","magnifier"]},
+  {n:"KPI 指揮中心",b:"hall",f:["screenWall"]},
+  {n:"成本會計館",b:"lab2",f:["vault","coins"]}],
+ line:[
+  {n:"HACCP 管制門",b:"saw",f:["gateBar","washStation"]},
+  {n:"JI 示範工坊",b:"saw",f:["workbench"]},
+  {n:"JI 師徒工坊",b:"saw",f:["workbench2"]},
+  {n:"回報廣播站",b:"tower",f:["speaker"]},
+  {n:"交班站",b:"shed",f:["signRack"]},
+  {n:"清潔洗滌區",b:"saw",f:["washer"]},
+  {n:"零件清點台",b:"shed",f:["partsBox"]},
+  {n:"冷凍庫",b:"shed",f:["frost"]},
+  {n:"異常處理站",b:"hall",f:["beacon","hatch"]},
+  {n:"良率實驗線",b:"saw",f:["scale"]},
+  {n:"人力配置中心",b:"hall",f:["board:clock"]},
+  {n:"表揚廣場",b:"plaza",f:["podium"]},
+  {n:"設備保養廠",b:"saw",f:["hoist"]},
+  {n:"5S 早會廣場",b:"plaza",f:["lineup","board:grid"]},
+  {n:"違規警示館",b:"hall",f:["warnWall"]},
+  {n:"稽查應對中心",b:"hall",f:["flagpole","bigWindow"]}]
+};
+window.ISLE_B=ISLE_B;
+const STG=[["概念","整地"],["應用","鋼骨吊車"],["練習","外牆窗戶"],["共同課","屋頂與設備"],["案例","啟用典禮"]];
+const TIER={bronze:{c:"#C98A55",e:"#8A5A30",n:"銅牌"},silver:{c:"#D3DAE1",e:"#7E8A96",n:"銀牌"},gold:{c:"#F0C33C",e:"#9C7410",n:"金牌"}};
+const RN={prod:"生管",qa:"衛管",line:"生產主管"};
+const BASE={
+  lab2:{x:.12,y:.2,dx:.5,dy:.44,h:.42},
+  shed:{x:.12,y:.22,dx:.54,dy:.44,h:.24,rise:.14},
+  saw:{x:.1,y:.2,dx:.58,dy:.46,h:.22},
+  tower:{x:.26,y:.26,dx:.28,dy:.28,h:.72},
+  hall:{x:.1,y:.24,dx:.6,dy:.42,h:.27},
+  plaza:{x:.12,y:.14,dx:.28,dy:.22,h:.2},
+  twin:{x:.06,y:.16,dx:.3,dy:.42,h:.36}
+};
+
+/* ---------- 等角投影：z 以地塊寬為單位 ---------- */
+let PR={cx:180,cy:128,a:150,b:75};
+const P=(gx,gy,z=0)=>[PR.cx+(gx-gy)*PR.a, PR.cy+(gx+gy)*PR.b - z*PR.a];
+const K=()=>PR.a/150;
+const f1=v=>v.toFixed(1);
+const pt=a=>a.map(p=>f1(p[0])+","+f1(p[1])).join(" ");
+const mix=(c,k)=> k===0?c:`color-mix(in srgb, ${c}, ${k>0?"#fff":"#000"} ${Math.abs(k)}%)`;
+const poly=(a,f,x="")=>`<polygon points="${pt(a)}" style="fill:${f}" ${x}/>`;
+const ln=(p,q,c,w=1,x="")=>`<line x1="${f1(p[0])}" y1="${f1(p[1])}" x2="${f1(q[0])}" y2="${f1(q[1])}" style="stroke:${c}" stroke-width="${f1(w)}" stroke-linecap="round" ${x}/>`;
+function box(x,y,dx,dy,h,c,z0=0,o={}){
+  return poly([P(x,y+dy,z0),P(x+dx,y+dy,z0),P(x+dx,y+dy,z0+h),P(x,y+dy,z0+h)],o.left??c)
+       + poly([P(x+dx,y,z0),P(x+dx,y+dy,z0),P(x+dx,y+dy,z0+h),P(x+dx,y,z0+h)],o.right??mix(c,-18))
+       + poly([P(x,y,z0+h),P(x+dx,y,z0+h),P(x+dx,y+dy,z0+h),P(x,y+dy,z0+h)],o.top??mix(c,14)); }
+const fL=(x0,x1,gy,z0,z1,f)=>poly([P(x0,gy,z0),P(x1,gy,z0),P(x1,gy,z1),P(x0,gy,z1)],f);
+const fR=(gx,y0,y1,z0,z1,f)=>poly([P(gx,y0,z0),P(gx,y1,z0),P(gx,y1,z1),P(gx,y0,z1)],f);
+const shadow=(x,y,dx,dy,h)=>poly([P(x,y),P(x+dx+h*.8,y),P(x+dx+h*.8,y+dy),P(x,y+dy)],"var(--is-shadow)");
+function cyl(gx,gy,r,h,z0=0,cone=0,fill="url(#is-mtl)"){ const c=P(gx,gy,z0), rx=1.414*r*PR.a, ry=1.414*r*PR.b, H=h*PR.a, top=c[1]-H;
+  let s=`<ellipse cx="${f1(c[0])}" cy="${f1(c[1])}" rx="${f1(rx)}" ry="${f1(ry)}" fill="#8D99A4"/><rect x="${f1(c[0]-rx)}" y="${f1(top)}" width="${f1(2*rx)}" height="${f1(H)}" style="fill:${fill}"/>`;
+  s+=`<ellipse cx="${f1(c[0])}" cy="${f1(top)}" rx="${f1(rx)}" ry="${f1(ry)}" fill="#EEF2F5" stroke="#9AA6B1" stroke-width=".6"/>`;
+  if(cone) s+=`<path d="M${f1(c[0]-rx)} ${f1(top)} L${f1(c[0])} ${f1(top-cone*PR.a)} L${f1(c[0]+rx)} ${f1(top)} A${f1(rx)} ${f1(ry)} 0 0 1 ${f1(c[0]-rx)} ${f1(top)} Z" style="fill:${fill}"/>`;
+  return s; }
+const at=(gx,gy,z,inner,sc=1)=>{ const p=P(gx,gy,z); return `<g transform="translate(${f1(p[0])},${f1(p[1])}) scale(${(K()*sc).toFixed(3)})">${inner}</g>`; };
+const rc=r=>`var(--is-${r})`;
+const WALL="#FBF8F1", WALLR="#E3DFD6";
+
+/* ---------- 牆面、窗戶、屋頂（依外型） ---------- */
+function winFill(st){ return st==="dark"?["#5B6670","#4D5761"]:st==="lit"?["#FFD772","#F2BE48"]:["#BFE0F2","#A3CDE2"]; }
+function wins(base,B,st,r){ const {x,y,dx,dy,h}=B, z0=.02, [g,g2]=winFill(st); let s="";
+  if(base==="lab2"||base==="twin"){
+    for(let f=0;f<2;f++){ const za=z0+h*(f?.6:.14), zb=z0+h*(f?.86:.36);
+      const nl=base==="twin"?2:4;
+      for(let i=0;i<nl;i++){ if(base==="lab2"&&!f&&i>=2) continue; const a=x+dx*(.08+i*(base==="twin"?.46:.235)), c=a+dx*(base==="twin"?.3:.15); s+=fL(a,c,y+dy,za,zb,g); }
+      for(let i=0;i<3;i++){ const a=y+dy*(.08+i*.31), c=a+dy*.2; s+=fR(x+dx,a,c,za,zb,g2); } }
+  } else if(base==="hall"){
+    for(let i=0;i<5;i++){ const a=x+dx*(.05+i*.19), c=a+dx*.16; s+=fL(a,c,y+dy,z0+h*.12,z0+h*.86,g); }
+    for(let i=0;i<3;i++){ const a=y+dy*(.1+i*.3), c=a+dy*.2; s+=fR(x+dx,a,c,z0+h*.4,z0+h*.82,g2); }
+  } else if(base==="shed"){
+    for(let i=0;i<3;i++){ const a=y+dy*(.1+i*.3), c=a+dy*.2; s+=fR(x+dx,a,c,z0+h*.55,z0+h*.85,g2); }
+    s+=fL(x+dx*.06,x+dx*.18,y+dy,z0+h*.5,z0+h*.85,g);
+  } else if(base==="saw"){
+    s+=fL(x+dx*.04,x+dx*.96,y+dy,z0+h*.62,z0+h*.86,g);
+    for(let i=0;i<2;i++){ const a=y+dy*(.15+i*.42), c=a+dy*.26; s+=fR(x+dx,a,c,z0+h*.5,z0+h*.86,g2); }
+  } else if(base==="tower"){
+    for(let f=0;f<4;f++){ const za=z0+h*(.16+f*.2), zb=za+h*.1; s+=fL(x+dx*.25,x+dx*.75,y+dy,za,zb,g); s+=fR(x+dx,y+dy*.25,y+dy*.75,za,zb,g2); }
+  } else if(base==="plaza"){
+    s+=fL(x+dx*.12,x+dx*.88,y+dy,z0+h*.4,z0+h*.82,g);
+  }
+  if(st==="lit"&&base!=="plaza") s+=fL(x+dx*.06,x+dx*.18,y+dy,z0,z0+h*(base==="tower"?.12:.36),"#FFE8A3");
+  return s; }
+function doors(base,B,r){ const {x,y,dx,dy,h}=B, z0=.02, k=K(); let s="";
+  const roll=(a,b,top)=>{ let t=fL(a,b,y+dy,z0+.01,z0+top,"#C9D0D6"); for(let i=1;i<6;i++){ const z=z0+.01+(top-.01)*i/6; t+=ln(P(a,y+dy,z),P(b,y+dy,z),"#9AA6B1",.7*k); } return t; };
+  if(base==="lab2"){ s+=fL(x+dx*.08,x+dx*.2,y+dy,z0,z0+h*.36,mix(rc(r),-8)); s+=roll(x+dx*.52,x+dx*.94,h*.4)+box(x+dx*.51,y+dy,dx*.44,.09,.05,"#B9C0C7"); }
+  else if(base==="shed"){ s+=roll(x+dx*.26,x+dx*.56,h*.72)+roll(x+dx*.64,x+dx*.94,h*.72); }
+  else if(base==="saw"){ s+=roll(x+dx*.62,x+dx*.9,h*.55)+fL(x+dx*.1,x+dx*.2,y+dy,z0,z0+h*.5,mix(rc(r),-8)); }
+  else if(base==="hall"){ s+=fL(x+dx*.43,x+dx*.57,y+dy,z0,z0+h*.5,mix(rc(r),-8)); }
+  else if(base==="tower"){ s+=fL(x+dx*.36,x+dx*.64,y+dy,z0,z0+h*.11,mix(rc(r),-8)); }
+  else if(base==="twin"){ s+=fL(x+dx*.35,x+dx*.6,y+dy,z0,z0+h*.3,mix(rc(r),-8)); }
+  return s; }
+function bodyBox(B,topDone){ const {x,y,dx,dy,h}=B; return shadow(x,y,dx,dy,h)+box(x,y,dx,dy,h,WALL,.02,{left:WALL,right:WALLR,top:topDone?"#EEF1F3":"#BCC3CA"}); }
+function belt(B,r){ const {x,y,dx,dy,h}=B, z=.02+h*.5; return fL(x,x+dx,y+dy,z-.012,z+.012,rc(r))+fR(x+dx,y,y+dy,z-.012,z+.012,mix(rc(r),-18)); }
+function gable(x,y,dx,dy,h,rise,c){ const m=y+dy/2;
+  return poly([P(x,y,h),P(x+dx,y,h),P(x+dx,m,h+rise),P(x,m,h+rise)],mix(c,8))
+   + poly([P(x+dx,y,h),P(x+dx,y+dy,h),P(x+dx,m,h+rise)],"#F4F1EA")
+   + poly([P(x,y+dy,h),P(x+dx,y+dy,h),P(x+dx,m,h+rise),P(x,m,h+rise)],c); }
+function roof(base,B,r,spec){ const {x,y,dx,dy,h}=B, z=h+.02, c=rc(r), k=K(); let s="";
+  const flat=()=>box(x-.01,y-.01,dx+.02,dy+.02,.025,c,z,{top:mix(c,30)})+box(x+.02,y+.02,dx-.04,dy-.04,.005,"#E9EDF0",z+.02);
+  const ac=(pts)=>pts.map(([a,b])=>{ const cc=P(a+.05,b+.04,z+.075); return box(a,b,.1,.08,.05,"#C9D0D6",z+.025)+`<ellipse cx="${f1(cc[0])}" cy="${f1(cc[1])}" rx="${f1(8*k)}" ry="${f1(4*k)}" fill="#7D8792"/><g class="is-fan"><path d="M${f1(cc[0]-6*k)} ${f1(cc[1])} L${f1(cc[0]+6*k)} ${f1(cc[1])} M${f1(cc[0])} ${f1(cc[1]-3*k)} L${f1(cc[0])} ${f1(cc[1]+3*k)}" stroke="#DDE2E6" stroke-width="${f1(1.4*k)}"/></g>`; }).join("");
+  if(base==="lab2") s+=flat()+ac([[x+.06,y+.06],[x+.2,y+.06]]);
+  else if(base==="hall") s+=flat()+ac([[x+.06,y+.06]])+poly([P(x+dx*.3,y+dy,z),P(x+dx*.7,y+dy,z),P(x+dx*.7,y+dy+.1,z-.02),P(x+dx*.3,y+dy+.1,z-.02)],c);
+  else if(base==="plaza") s+=box(x-.02,y-.02,dx+.04,dy+.04,.025,c,z,{top:mix(c,30)});
+  else if(base==="tower"){ if(spec.f.includes("funnel")){ const t=P(x+dx/2,y+dy/2,z), w=dx*PR.a*1.3; s+=box(x-.01,y-.01,dx+.02,dy+.02,.02,c,z)+`<path d="M${f1(t[0]-w)} ${f1(t[1]-30*k)} L${f1(t[0]+w)} ${f1(t[1]-30*k)} L${f1(t[0]+6*k)} ${f1(t[1]-4*k)} L${f1(t[0]-6*k)} ${f1(t[1]-4*k)} Z" style="fill:${c}"/><ellipse cx="${f1(t[0])}" cy="${f1(t[1]-30*k)}" rx="${f1(w)}" ry="${f1(w*.32)}" style="fill:${mix(c,30)}"/>`; }
+    else s+=box(x-.03,y-.03,dx+.06,dy+.06,.03,c,z,{top:mix(c,30)})+box(x+.04,y+.04,dx-.08,dy-.08,.05,mix(c,-10),z+.03); }
+  else if(base==="shed") s+=gable(x-.02,y-.02,dx+.04,dy+.04,z,B.rise,c);
+  else if(base==="saw"){ const n=3, w=dx/n;
+    for(let i=0;i<n;i++){ const g0=x+i*w, H=.11;
+      s+=poly([P(g0,y,z),P(g0+w,y,z),P(g0+w,y,z+H),P(g0,y,z+H)],"#CFE7F2");
+      s+=poly([P(g0,y+dy,z),P(g0+w,y+dy,z),P(g0+w,y,z+H),P(g0,y,z+H)],c);
+      s+=poly([P(g0+w,y,z),P(g0+w,y+dy,z),P(g0+w,y,z+H)],mix(c,-28)); } }
+  else if(base==="twin"){ const B2={...B,x:B.x+.5}; s+=flat(); s+=box(B2.x-.01,y-.01,dx+.02,dy+.02,.025,c,z,{top:mix(c,30)});
+    s+=box(x+dx,y+dy*.35,.2,dy*.3,.07,"#CFE7F2",h*.6,{left:"#BFE0F2",right:"#A3CDE2",top:c}); }
+  return s; }
+function signPos(base,B,spec){ const {x,y,dx,dy,h}=B;
+  if(base==="shed") return P(x+dx*.5,y+dy*.5,h+.02+B.rise);
+  if(base==="saw") return P(x+dx*.5,y+dy*.55,h+.15);
+  if(base==="tower") return spec.f.includes("funnel")?P(x+dx/2,y+dy/2,h+.3):P(x+dx/2,y+dy/2,h+.1);
+  if(base==="twin") return P(x+dx+.1,y+dy*.5,h*.6+.07);
+  if(base==="plaza") return P(x+dx*.5,y+dy*.5,h+.045);
+  return P(x+dx*.62,y+dy*.72,h+.045); }
+
+/* ---------- 屋頂招牌：獎章刻紋圖案，完工後外圈換成獎章色 ---------- */
+function sign(type,motif,p,r,ring){ const k=K()*1.25; let s=`<g transform="translate(${f1(p[0])},${f1(p[1])}) scale(${k.toFixed(3)})">`;
+  if(type==="cup"||type==="cone"||type==="jar"||type==="dome"){ const y0=type==="dome"?0:-10;
+    if(type!=="dome") s+=`<path d="M-2 0 v-8 M2 0 v-8" stroke="#7D8792" stroke-width="1.4"/>`;
+    if(ring) s+=`<circle cx="0" cy="${y0-16}" r="19" fill="${ring.c}" stroke="${ring.e}" stroke-width="2"/><circle cx="0" cy="${y0-16}" r="15" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.2"/>`;
+    if(type==="cup") s+=`<path d="M-11 -40 L11 -40 L8 -10 L-8 -10 Z" fill="#FFFFFF" stroke="#AEB8C2"/><path d="M-9.9 -29 L9.9 -29 L9.3 -21 L-9.3 -21 Z" style="fill:${rc(r)}"/><ellipse cx="0" cy="-40" rx="12.5" ry="3.4" fill="#EEF2F5" stroke="#AEB8C2"/><path d="M-6 -37 L-5 -14" stroke="#fff" stroke-width="2" opacity=".8"/>`;
+    if(type==="cone") s+=`<path d="M-9 -26 L9 -26 L0 -6 Z" fill="#D9A35E" stroke="#A8743A" stroke-width=".8"/><path d="M-6 -26 L2 -9 M0 -26 L5 -16 M6 -26 L-2 -9 M0 -26 L-5 -16" stroke="#A8743A" stroke-width=".6"/><ellipse cx="0" cy="-28" rx="11" ry="5" fill="#FFF8EC" stroke="#D8C7AA"/><ellipse cx="0" cy="-34" rx="8.5" ry="4.5" fill="#FFF8EC" stroke="#D8C7AA"/><ellipse cx="0" cy="-39" rx="5.5" ry="3.5" fill="#FFF8EC" stroke="#D8C7AA"/><circle cx="-3" cy="-32" r="1.6" fill="#E25B6B"/>`;
+    if(type==="jar") s+=`<rect x="-10" y="-37" width="20" height="26" rx="6" fill="#EAF4F8" stroke="#9DB7C4"/><rect x="-8" y="-29" width="16" height="16" rx="4.5" fill="#C8323C"/><rect x="-6" y="-25" width="12" height="7" rx="1.5" fill="#FFFFFF"/><rect x="-11" y="-42" width="22" height="6" rx="2" style="fill:${rc(r)}"/>`;
+    if(type==="dome") s+=`<ellipse cx="0" cy="-2" rx="17" ry="5" fill="#8D99A4"/><path d="M-15 -3 A15 18 0 0 1 15 -3 Z" fill="rgba(190,226,242,.6)" stroke="#7FAFC6" stroke-width="1.2"/><ellipse cx="0" cy="-5" rx="10" ry="3" fill="#F2E4C8" stroke="#C8B48C" stroke-width=".6"/><circle cx="-4" cy="-5" r="1.4" fill="#E25B6B"/><circle cx="2" cy="-6" r="1.1" fill="#F2A33A"/><circle cx="4.5" cy="-4.2" r="1.2" fill="#4F9A4C"/><path d="M-9 -14 A11 13 0 0 1 -1 -19" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+    return s+"</g>"; }
+  s+=`<path d="M-2 0 v-10 M2 0 v-10" stroke="#7D8792" stroke-width="1.4"/>`;
+  if(ring) s+=`<circle cx="0" cy="-26" r="19" fill="${ring.c}" stroke="${ring.e}" stroke-width="2"/>`;
+  s+=`<circle cx="0" cy="-26" r="15" fill="#FFFFFF" style="stroke:${rc(r)}" stroke-width="2.4"/><g transform="translate(-12,-38)" fill="none" style="stroke:${rc(r)}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${motif||""}</g>`;
+  return s+"</g>"; }
+
+/* ---------- 外型特徵（第 4 階段起出現） ---------- */
+const FEAT={
+  tanks:(B,r)=>{ let s=box(.74,.16,.2,.5,.02,"#C3C9CF"); [[.84,.22],[.84,.41],[.84,.6]].forEach(([a,b])=>s+=cyl(a,b,.055,.3,.02,.05)); [.31,.28].forEach(z=>s+=ln(P(B.x+B.dx,.3,z),P(.84,.3,z),"#AEB8C2",2.4*K())); return s; },
+  freezer:(B,r)=>{ let s=box(.76,.3,.17,.16,.16,"#E7F2F8",0,{left:"#E7F2F8",right:"#C9DFEA",top:"#F4FAFD"}); for(let t=0;t<3;t++) s+=fL(.78,.91,.46,.04+t*.035,.05+t*.035,"#A9D3E6"); return s+ln(P(B.x+B.dx,.38,.14),P(.76,.38,.14),"#AEB8C2",2.4*K()); },
+  awning:(B,r)=>{ const {x,y,dx,dy,h}=B, z=h*.72; let s=""; for(let t=0;t<6;t++){ const a=x+dx*(.04+t*.155), c=a+dx*.155; s+=poly([P(a,y+dy,z),P(c,y+dy,z),P(c,y+dy+.09,z-.05),P(a,y+dy+.09,z-.05)],t%2?"#FFFFFF":rc(r)); } return s; },
+  steam:(B,r)=>{ const k=K(); let s=box(.78,.2,.07,.07,.56,"#B8A28A",0,{left:"#C9B49A"}); const tp=P(.815,.235,.56); return s+`<g class="is-steam"><circle cx="${f1(tp[0])}" cy="${f1(tp[1]-3)}" r="${f1(5*k)}" fill="#F3F1EC"/><circle cx="${f1(tp[0])}" cy="${f1(tp[1]-3)}" r="${f1(4.5*k)}" fill="#F3F1EC"/><circle cx="${f1(tp[0])}" cy="${f1(tp[1]-3)}" r="${f1(4*k)}" fill="#F3F1EC"/></g>`; },
+  crates:()=>{ const k=K(); let s=""; [[.76,.74,0],[.86,.62,0],[.78,.64,.05]].forEach(([a,b,z],t)=>{ s+=box(a,b,.07,.07,.05,"#C08A52",z); const c=P(a+.035,b+.035,z+.05); s+=`<circle cx="${f1(c[0]-3*k)}" cy="${f1(c[1])}" r="${f1(2.4*k)}" fill="${t%2?"#E25B6B":"#F2A33A"}"/><circle cx="${f1(c[0]+3*k)}" cy="${f1(c[1]+1)}" r="${f1(2.4*k)}" fill="${t%2?"#C8323C":"#E89A28"}"/>`; }); return s; },
+  autoclave:(B)=>{ const k=K(); let s=cyl(.82,.58,.07,.17,0); const g=P(.82,.58,.1); return s+`<circle cx="${f1(g[0])}" cy="${f1(g[1])}" r="${f1(4*k)}" fill="#fff" stroke="#5F6B76" stroke-width="${f1(k)}"/><path d="M${f1(g[0])} ${f1(g[1])} l${f1(2.5*k)} ${f1(-2*k)}" stroke="#C8323C" stroke-width="${f1(k)}"/>`+ln(P(B.x+B.dx,.58,.14),P(.75,.58,.14),"#9AA6B1",3*k); },
+  basins:()=>{ let s=fR(.92,.2,.62,.02,.2,"#DCE8EE"); [.26,.4,.54].forEach(b=>{ s+=box(.82,b,.08,.1,.08,"#FFFFFF",0,{right:"#E1E6EA"}); s+=ln(P(.88,b+.05,.08),P(.88,b+.05,.12),"#7D8792",1.4*K()); }); return s; },
+  airlock:(B,r)=>box(B.x+B.dx*.38,B.y+B.dy,B.dx*.24,.1,B.h*.6,"#EAF4F8",.02,{left:"#D7EAF2",right:"#BFD8E4",top:mix(rc(r),20)}),
+  sampleFlags:(B,r)=>[[.78,.3],[.86,.55],[.3,.86],[.56,.9],[.8,.82],[.66,.62]].map(([a,b])=>at(a,b,0,`<path d="M0 0 v-16" stroke="#7D8792" stroke-width="1.2"/><path d="M0 -16 L9 -13 L0 -10 Z" style="fill:${rc(r)}"/><circle cx="0" cy="0" r="1.6" fill="#FFFFFF"/>`)).join(""),
+  vane:()=>{ const k=K(); return at(.86,.24,0,`<path d="M0 0 v-58" stroke="#7D8792" stroke-width="2"/><path d="M-12 -58 h24 M6 -62 l6 4 -6 4" stroke="#7D8792" stroke-width="1.6" fill="none"/><g class="is-fan"><circle cx="0" cy="-66" r="2.5" fill="#5F6B76"/><path d="M0 -66 l-9 -2 M0 -66 l6 7 M0 -66 l4 -8" stroke="#5F6B76" stroke-width="1.4"/><circle cx="-9" cy="-68" r="2" fill="#F2A33A"/><circle cx="6" cy="-59" r="2" fill="#F2A33A"/><circle cx="4" cy="-74" r="2" fill="#F2A33A"/></g>`); },
+  drums:()=>{ let s=box(.44,.78,.18,.1,.06,"#B88A5A",0); [[.24,.82],[.32,.86],[.28,.92],[.36,.8]].forEach(([a,b])=>s+=cyl(a,b,.032,.09,0,0,"#3B6FB6")); return s; },
+  truck:(B,r)=>{ const k=K(); let s=""; const x=.62,y=.76; s+=box(x,y,.26,.13,.14,"#FFFFFF",.02,{right:"#E3DFD6"})+fL(x,x+.26,y+.13,.08,.11,rc(r))+box(x+.26,y+.01,.08,.11,.1,mix(rc(r),-5),.02,{left:"#CFE7F2"});
+    [[x+.05,y+.13],[x+.21,y+.13],[x+.3,y+.12]].forEach(([a,b])=>{ const p=P(a,b,.02); s+=`<ellipse cx="${f1(p[0])}" cy="${f1(p[1])}" rx="${f1(4*k)}" ry="${f1(4.6*k)}" fill="#2F3A44"/>`; }); return s; },
+  thermoTower:()=>at(.86,.28,0,`<rect x="-5" y="-86" width="10" height="78" rx="5" fill="#FFFFFF" stroke="#9AA6B1"/><rect x="-2.4" y="-60" width="4.8" height="54" fill="#E5484D"/><circle cx="0" cy="-4" r="9" fill="#E5484D" stroke="#B8363A"/><path d="M5 -76 h4 M5 -66 h3 M5 -56 h4 M5 -46 h3 M5 -36 h4" stroke="#7D8792" stroke-width="1.2"/>`),
+  weights:()=>cyl(.4,.86,.05,.05,0,0,"#5F6B76")+cyl(.4,.86,.035,.04,.05,0,"#6E7B88")+cyl(.4,.86,.02,.03,.09,0,"#7D8792")+cyl(.52,.88,.035,.04,0,0,"#5F6B76"),
+  hatch:()=>{ let s=poly([P(.72,.5),P(.96,.5),P(.96,.94),P(.72,.94)],"#F2C33A"); for(let t=0;t<7;t++){ const a=.5+t*.064; s+=poly([P(.72,a),P(.96,a+.03),P(.96,a+.06),P(.72,a+.03)],"#2F3A44"); } s+=box(.78,.6,.12,.2,.004,"#E9EDF0"); s+=box(.8,.64,.08,.1,.07,"#C08A52",.01); return s; },
+  waterTower:()=>{ const k=K(); let s=""; [[.8,.2],[.92,.2],[.8,.36],[.92,.36]].forEach(([a,b])=>s+=ln(P(a,b,0),P(a,b,.34),"#7D8792",1.8*k)); return s+cyl(.86,.28,.08,.16,.34,.04,"url(#is-mtl)"); },
+  bugLamp:()=>at(.22,.9,0,`<path d="M0 0 v-30" stroke="#7D8792" stroke-width="1.6"/><rect x="-6" y="-42" width="12" height="12" rx="2" fill="#B49AE8" stroke="#6F55B8"/><circle cx="0" cy="-36" r="9" fill="#B49AE8" opacity=".35"/>`),
+  colorDoors:(B)=>{ const {x,y,dx,dy}=B; return ["#F2C33A","#4FAFE0","#E25B6B"].map((c,i)=>fL(x+dx*(.24+i*.24),x+dx*(.4+i*.24),y+dy,.02,.17,c)).join(""); },
+  partition:()=>{ let s=""; ["#F2C33A","#4FAFE0","#E25B6B"].forEach((c,i)=>{ s+=box(.76,.18+i*.17,.18,.02,.1,c); }); return s; },
+  sampleFridge:()=>box(.8,.22,.12,.13,.32,"#F4F7F9",0,{right:"#DCE3E8"})+fL(.81,.91,.35,.04,.3,"#CFE7F2"),
+  gateBar:(B,r)=>{ const k=K(); return box(.06,.82,.1,.1,.12,"#FFFFFF",0,{right:"#E3DFD6",top:rc(r)})+fL(.07,.15,.92,.05,.1,"#CFE7F2")+ln(P(.18,.86,.08),P(.6,.86,.08),"#E5484D",4*k)+ln(P(.26,.86,.08),P(.32,.86,.08),"#FFFFFF",4*k)+ln(P(.42,.86,.08),P(.48,.86,.08),"#FFFFFF",4*k); },
+  flagpole:(B,r)=>at(.9,.2,0,`<path d="M0 0 v-96" stroke="#9AA6B1" stroke-width="2"/><circle cx="0" cy="-97" r="2" fill="#C9D0D6"/><g class="is-sway"><path d="M0 -94 q10 -4 20 0 t20 0 v14 q-10 4 -20 0 t-20 0 Z" style="fill:${rc(r)}"/></g>`),
+  bigWindow:()=>"",
+  benches:()=>{ let s=""; for(let i=0;i<3;i++) s+=box(.2+i*.04,.74+i*.06,.42,.05,.035+i*.02,"#C08A52"); return s; },
+  cabinets:()=>{ let s=""; [[.78,.2],[.78,.34],[.78,.48]].forEach(([a,b])=>{ s+=box(a,b,.12,.12,.24,"#C9D0D6",0,{left:"#D7DDE2"}); for(let t=1;t<4;t++) s+=fL(a+.02,a+.1,b+.12,t*.06,t*.06+.012,"#9AA6B1"); }); return s; },
+  dockR:(B)=>{ let s=box(B.x+B.dx,B.y+.06,.1,B.dy-.12,.05,"#B9C0C7"); return s+fR(B.x+B.dx,B.y+.1,B.y+B.dy-.1,.06,.17,"#C9D0D6"); },
+  clockFace:(B)=>{ const p=P(B.x+B.dx*.5,B.y+B.dy,.02+B.h*.95); return `<g transform="translate(${f1(p[0])},${f1(p[1])}) scale(${K().toFixed(3)})"><ellipse cx="0" cy="0" rx="15" ry="17" fill="#FFFFFF" stroke="#7D8792" stroke-width="2"/><path d="M0 0 v-11 M0 0 l8 4" stroke="#2F3A44" stroke-width="2" stroke-linecap="round"/></g>`; },
+  board:(B,r,icon)=>{ const k=K(); let s=ln(P(.78,.62,0),P(.78,.62,.2),"#7D8792",2*k)+ln(P(.94,.62,0),P(.94,.62,.2),"#7D8792",2*k)+fL(.74,.98,.62,.16,.4,"#FFFFFF")+fL(.74,.98,.62,.36,.4,rc(r));
+    const c=P(.86,.62,.26); return s+`<g transform="translate(${f1(c[0]-12*k)},${f1(c[1]-12*k)}) scale(${k.toFixed(3)})" fill="none" style="stroke:${rc(r)}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${(typeof MOTIF!=="undefined"&&MOTIF[icon])||""}</g>`; },
+  conveyor:()=>{ const k=K(); let s=""; [.08,.4,.72].forEach(a=>s+=ln(P(a,.82,0),P(a,.82,.06),"#7D8792",1.6*k)); s+=box(.04,.78,.9,.07,.02,"#5F6B76",.06); for(let i=0;i<6;i++){ const c=P(.12+i*.14,.815,.08); s+=`<rect x="${f1(c[0]-3*k)}" y="${f1(c[1]-7*k)}" width="${f1(6*k)}" height="${f1(7*k)}" rx="1" fill="#FFFFFF" stroke="#AEB8C2" stroke-width=".6"/>`; } return s; },
+  funnel:()=>"",
+  jigRack:()=>{ let s=box(.78,.2,.14,.42,.004,"#B9C0C7"); [.2,.62].forEach(b=>s+=ln(P(.85,b,0),P(.85,b,.3),"#7D8792",2*K())); [.1,.2,.3].forEach((z,i)=>s+=ln(P(.85,.2,z),P(.85,.62,z),"#7D8792",1.4*K())); [["#F2C33A",.28,.1],["#4FAFE0",.44,.2],["#E25B6B",.34,.3]].forEach(([c,b,z])=>s+=box(.82,b,.06,.08,.06,c,z-.06)); return s; },
+  dominoes:()=>{ const k=K(); let s=""; for(let i=0;i<6;i++){ const p=P(.22+i*.09,.86,0), a=i<3?0:(i-2)*16; s+=`<g transform="translate(${f1(p[0])},${f1(p[1])}) rotate(${a}) scale(${k.toFixed(3)})"><rect x="-3" y="-24" width="6" height="24" rx="1" fill="#2F3A44"/><circle cx="0" cy="-17" r="1.3" fill="#fff"/><circle cx="0" cy="-7" r="1.3" fill="#fff"/></g>`; } return s; },
+  rack:()=>{ let s=""; [[.76,.16],[.76,.62],[.94,.16],[.94,.62]].forEach(([a,b])=>s+=ln(P(a,b,0),P(a,b,.44),"#3B5BDB",2*K()));
+    [.14,.29,.44].forEach(z=>s+=poly([P(.76,.16,z),P(.94,.16,z),P(.94,.62,z),P(.76,.62,z)],"#F2A33A"));
+    [[.02,.2],[.17,.36],[.02,.48],[.32,.24],[.17,.5]].forEach(([z,b])=>s+=box(.79,b,.12,.1,.1,"#C08A52",z+.005)); return s; },
+  slopeRack:()=>{ let s=poly([P(.76,.18,.3),P(.94,.18,.3),P(.94,.66,.08),P(.76,.66,.08)],"#9AA6B1"); [.28,.4,.52].forEach((b,i)=>s+=box(.79,b,.12,.09,.08,"#C08A52",.27-i*.06)); s+=ln(P(.76,.18,0),P(.76,.18,.3),"#7D8792",2*K())+ln(P(.76,.66,0),P(.76,.66,.08),"#7D8792",2*K()); return s; },
+  magnifier:()=>at(.5,.88,0,`<circle cx="0" cy="-22" r="11" fill="rgba(190,226,242,.6)" stroke="#5F6B76" stroke-width="3"/><path d="M8 -14 L16 -4" stroke="#5F6B76" stroke-width="4" stroke-linecap="round"/>`),
+  screenWall:(B,r)=>{ const k=K(); let s=ln(P(.8,.66,0),P(.8,.66,.18),"#7D8792",2.4*k)+ln(P(.94,.66,0),P(.94,.66,.18),"#7D8792",2.4*k)+fL(.72,1.0,.66,.14,.44,"#1F2A36");
+    const c=P(.86,.66,.29); return s+`<g transform="translate(${f1(c[0])},${f1(c[1])}) scale(${k.toFixed(3)})"><path d="M-16 6 L-8 -2 L0 3 L10 -9 L16 -6" fill="none" stroke="#6DD3A2" stroke-width="2"/><rect x="-16" y="9" width="5" height="4" fill="#F2C33A"/><rect x="-9" y="7" width="5" height="6" fill="#4FAFE0"/><rect x="-2" y="5" width="5" height="8" fill="#E25B6B"/></g>`; },
+  vault:(B)=>{ const p=P(B.x+B.dx*.75,B.y+B.dy,.02+B.h*.2), k=K(); return `<g transform="translate(${f1(p[0])},${f1(p[1])}) scale(${k.toFixed(3)})"><ellipse cx="0" cy="0" rx="14" ry="16" fill="#C9D0D6" stroke="#7D8792" stroke-width="2"/><ellipse cx="0" cy="0" rx="8" ry="9" fill="#E9EDF0" stroke="#7D8792"/><path d="M-8 0 h16 M0 -9 v18" stroke="#7D8792" stroke-width="1.6"/></g>`; },
+  coins:()=>{ let s=""; [[.5,.86,0],[.5,.86,.02],[.5,.86,.04],[.58,.9,0],[.58,.9,.02]].forEach(([a,b,z])=>s+=cyl(a,b,.03,.02,z,0,"#F0C33C")); return s; },
+  workbench:(B,r)=>{ let s=box(.3,.76,.32,.1,.008,"#7D8792",.06)+box(.3,.76,.32,.1,.012,"#C08A52",.07); [.32,.6].forEach(a=>s+=ln(P(a,.86,0),P(a,.86,.07),"#7D8792",1.6*K())); s+=box(.36,.78,.06,.04,.03,rc(r),.08)+box(.48,.79,.05,.05,.04,"#F2C33A",.08); return s; },
+  workbench2:(B,r)=>FEAT.workbench(B,r)+(()=>{ let s=box(.66,.76,.26,.1,.012,"#C08A52",.07); [.68,.9].forEach(a=>s+=ln(P(a,.86,0),P(a,.86,.07),"#7D8792",1.6*K())); return s+box(.74,.78,.06,.05,.04,"#4FAFE0",.08); })(),
+  speaker:(B,r)=>{ const p=P(B.x+B.dx/2,B.y+B.dy/2,B.h+.1); return `<g transform="translate(${f1(p[0])},${f1(p[1])}) scale(${K().toFixed(3)})"><path d="M0 0 v-22" stroke="#7D8792" stroke-width="2"/><path d="M0 -22 L-14 -30 L-14 -14 Z M0 -22 L14 -30 L14 -14 Z" fill="#E9EDF0" stroke="#7D8792"/><path d="M-20 -30 q-5 8 0 16 M20 -30 q5 8 0 16" fill="none" style="stroke:${rc(r)}" stroke-width="1.6"/></g>`; },
+  signRack:()=>[["#3FB27C",.3],["#F2C33A",.44],["#E5484D",.58]].map(([c,a])=>at(a,.86,0,`<path d="M0 0 v-14" stroke="#7D8792" stroke-width="1.6"/><rect x="-7" y="-26" width="14" height="12" rx="2" fill="${c}" stroke="#fff"/>`)).join(""),
+  washer:()=>{ const k=K(); const p=P(.6,.84); let s=`<ellipse cx="${f1(p[0])}" cy="${f1(p[1])}" rx="${f1(40*k)}" ry="${f1(14*k)}" fill="#8FC9E6" opacity=".7"/>`; s+=box(.76,.24,.16,.16,.04,"#C08A52",.06)+box(.76,.44,.16,.16,.04,"#C08A52",.06); [.24,.6].forEach(b=>s+=ln(P(.84,b,0),P(.84,b,.06),"#7D8792",1.4*k)); return s+at(.42,.86,0,`<path d="M0 0 q10 -16 24 -10" fill="none" stroke="#3B6FB6" stroke-width="2"/><rect x="-4" y="-6" width="8" height="8" rx="2" fill="#3B6FB6"/>`); },
+  partsBox:()=>{ let s=poly([P(.72,.6),P(.98,.6),P(.98,.62),P(.72,.62)],"#F2C33A"); s+=box(.8,.2,.12,.34,.26,"#C9D0D6",0,{left:"#D7DDE2"}); for(let i=0;i<4;i++) for(let j=0;j<3;j++) s+=fR(.92,.23+j*.1,.3+j*.1,.03+i*.055,.07+i*.055,["#4FAFE0","#F2C33A","#E25B6B"][j]); return s; },
+  frost:(B)=>{ const {x,y,dx,dy,h}=B; let s=fL(x,x+dx,y+dy,.02,.02+h,"rgba(205,232,245,.55)")+fR(x+dx,y,y+dy,.02,.02+h,"rgba(190,222,238,.55)"); for(let i=0;i<9;i++){ const a=x+dx*(.04+i*.11), p=P(a,y+dy,.02+h); s+=`<path d="M${f1(p[0])} ${f1(p[1])} l${f1(2*K())} ${f1(8*K())} l${f1(2*K())} ${f1(-8*K())}" fill="#FFFFFF"/>`; } return s+fL(x+dx*.36,x+dx*.6,y+dy,.02,.02+h*.7,"#E9EDF0")+fL(x+dx*.37,x+dx*.39,y+dy,.1,.18,"#7D8792"); },
+  beacon:(B)=>{ const p=P(B.x+B.dx*.2,B.y+B.dy*.3,B.h+.05); return `<g transform="translate(${f1(p[0])},${f1(p[1])}) scale(${K().toFixed(3)})"><path d="M0 0 v-12" stroke="#7D8792" stroke-width="2"/><rect x="-5" y="-22" width="10" height="10" rx="4" fill="#F28C28"/><circle class="is-blink" cx="0" cy="-17" r="12" fill="#F28C28" opacity=".35"/></g>`; },
+  scale:()=>box(.36,.78,.2,.14,.03,"#9AA6B1")+box(.6,.8,.04,.04,.14,"#5F6B76")+box(.58,.79,.08,.06,.06,"#2F3A44",.14,{left:"#6DD3A2"}),
+  podium:(B,r)=>{ let s=box(.62,.66,.12,.12,.08,"#D7DDE2")+box(.74,.66,.12,.12,.14,mix(rc(r),20))+box(.86,.66,.1,.12,.05,"#D7DDE2"); return s+at(.8,.72,.14,`<path d="M0 -22 l3 6 6 1 -4.5 4 1 6 -5.5 -3 -5.5 3 1 -6 -4.5 -4 6 -1 z" fill="#F0C33C" stroke="#9C7410"/>`); },
+  hoist:()=>{ const k=K(); let s=""; [.22,.66].forEach(b=>s+=box(.82,b,.04,.04,.42,"#F2A33A")); s+=box(.82,.22,.04,.48,.04,"#F2A33A",.42); s+=ln(P(.84,.44,.42),P(.84,.44,.2),"#5F6B76",1*k)+box(.8,.4,.08,.08,.06,"#7D8792",.14); return s; },
+  lineup:()=>{ let s=""; for(let i=0;i<3;i++) for(let j=0;j<2;j++){ const a=.5+i*.14, b=.5+j*.16; s+=`<polygon points="${pt([P(a,b),P(a+.1,b),P(a+.1,b+.1),P(a,b+.1)])}" fill="none" stroke="#FFFFFF" stroke-width="${f1(1.6*K())}"/>`; } return s; },
+  warnWall:(B,r)=>{ const k=K(); let s=fL(.72,.98,.62,.02,.34,"#E5484D")+fL(.72,.98,.62,.3,.34,"#2F3A44"); const c=P(.85,.62,.18); return s+`<g transform="translate(${f1(c[0])},${f1(c[1])}) scale(${k.toFixed(3)})"><path d="M0 -16 L14 10 L-14 10 Z" fill="#FFFFFF"/><path d="M0 -6 v8 M0 6 v1" stroke="#E5484D" stroke-width="2.4" stroke-linecap="round"/></g>`; },
+  washStation:()=>{ let s=""; [.66,.8].forEach(a=>s+=box(a,.78,.1,.08,.08,"#FFFFFF",0,{right:"#E1E6EA"})); return s; }
+};
+function feature(id,B,r){ const [k,arg]=id.split(":"); const fn=FEAT[k]; return fn?fn(B,r,arg):""; }
+
+/* ---------- 施工五階段 ---------- */
+function fence(front){ const i=.03, o=.97, k=K(); let s="";
+  const edges= front? [[[o,i],[o,o]],[[i,o],[o,o]]] : [[[i,i],[o,i]],[[i,i],[i,o]]];
+  edges.forEach(([a,b])=>{ for(let t=0;t<=1.001;t+=.25){ const x=a[0]+(b[0]-a[0])*t, y=a[1]+(b[1]-a[1])*t; s+=ln(P(x,y,0),P(x,y,.05),"#9AA4AE",1.1*k); }
+    s+=ln(P(a[0],a[1],.04),P(b[0],b[1],.04),"#F3A266",1.6*k); });
+  return `<g opacity=".7">${s}</g>`; }
+function crane(){ const k=K(), X=.88, Y=.1, Hh=1.0; let s=box(X-.035,Y-.035,.07,.07,.03,"#8D99A4");
+  s+=fL(X-.022,X+.022,Y+.022,.03,Hh,"#F0BE2E")+fR(X+.022,Y-.022,Y+.022,.03,Hh,"#C99A1C");
+  for(let z=.08;z<Hh-.04;z+=.08) s+=ln(P(X-.022,Y+.022,z),P(X+.022,Y+.022,z+.06),"#A87F12",.8*k);
+  s+=ln(P(X+.16,Y,Hh),P(.16,Y,Hh),"#F0BE2E",3.4*k)+ln(P(X,Y,Hh+.12),P(.28,Y,Hh),"#A87F12",.8*k)+ln(P(X,Y,Hh+.12),P(X+.15,Y,Hh),"#A87F12",.8*k);
+  s+=ln(P(X,Y,Hh),P(X,Y,Hh+.12),"#F0BE2E",2.2*k)+box(X+.09,Y-.04,.08,.08,.06,"#7D8792",Hh-.06);
+  s+=box(X-.075,Y-.05,.075,.1,.07,"#F0BE2E",Hh-.08,{left:"#FFFFFF"});
+  const hx=.4; s+=ln(P(hx,Y,Hh),P(hx,Y,.68),"#5F6B76",.8*k)+box(hx-.13,Y-.02,.26,.04,.025,"#6F8292",.64);
+  return s; }
+function frame(B){ const {x,y,dx,dy,h}=B, k=K(), c="#5F7284"; let s="";
+  [[x,y],[x+dx,y],[x+dx,y+dy],[x,y+dy],[x+dx/2,y+dy],[x+dx,y+dy/2]].forEach(([a,b])=>s+=ln(P(a,b,.02),P(a,b,h+.02),c,2.4*k));
+  const lv=h>.5?[h*.33,h*.66,h]:[h*.5,h];
+  lv.forEach(z=>s+=`<polygon points="${pt([P(x,y,z+.02),P(x+dx,y,z+.02),P(x+dx,y+dy,z+.02),P(x,y+dy,z+.02)])}" fill="none" stroke="${c}" stroke-width="${f1(1.8*k)}"/>`);
+  s+=ln(P(x,y+dy,.02),P(x+dx/2,y+dy,lv[0]+.02),c,k)+ln(P(x+dx,y,.02),P(x+dx,y+dy/2,lv[0]+.02),c,k);
+  return s; }
+function plants(){ const k=K(); return [[.06,.9],[.66,.94]].map(([gx,gy])=>{ const p=P(gx,gy); return `<ellipse cx="${f1(p[0]+3*k)}" cy="${f1(p[1]+1)}" rx="${f1(9*k)}" ry="${f1(3*k)}" style="fill:var(--is-shadow)"/><circle cx="${f1(p[0])}" cy="${f1(p[1]-7*k)}" r="${f1(8*k)}" fill="#4F9A4C"/><circle cx="${f1(p[0]-3*k)}" cy="${f1(p[1]-10*k)}" r="${f1(3.2*k)}" fill="#7BC172"/>`; }).join(""); }
+function bunting(B){ const {x,y,dx,dy,h}=B, k=K(); let s="", n=8; const cols=["#E25B6B","#F2C33A","#4FAFE0","#7BC172"]; const zz=Math.min(h,.3)*.9+.02;
+  const a=P(x-.02,y+dy+.02,zz), c=P(x+dx+.02,y+dy+.02,zz);
+  for(let t=0;t<n;t++){ const u=t/n, v=(t+1)/n, sx=a[0]+(c[0]-a[0])*u, sy=a[1]+(c[1]-a[1])*u+Math.sin(u*Math.PI)*7*k, ex=a[0]+(c[0]-a[0])*v, ey=a[1]+(c[1]-a[1])*v+Math.sin(v*Math.PI)*7*k;
+    s+=`<path d="M${f1(sx)} ${f1(sy)} L${f1(ex)} ${f1(ey)} L${f1((sx+ex)/2)} ${f1((sy+ey)/2+7*k)} Z" fill="${cols[t%4]}"/>`; }
+  return `<polyline points="${pt([a,c])}" stroke="#7D8792" stroke-width="${f1(.6*k)}" fill="none"/>`+s; }
+const person=(gx,gy,r,cls)=>at(gx,gy,0,`<g class="is-walk ${cls}"><ellipse cx="1" cy="0" rx="4" ry="1.5" style="fill:var(--is-shadow)"/><rect x="-2.8" y="-12" width="5.6" height="10" rx="2" fill="#FFFFFF" stroke="#8A96A2" stroke-width=".5"/><path d="M-1.5 -2 v2.5 M1.5 -2 v2.5" stroke="#3E4650" stroke-width="1.2"/><circle cx="0" cy="-14.5" r="3" fill="#F1C9A5"/><path d="M-3.2 -15.5 a3.2 3.2 0 0 1 6.4 0z" style="fill:${rc(r)}"/></g>`);
+
+function walls(base,B,r,spec,stage,dark){ let s="";
+  if(base==="twin"){ const B2={...B,x:B.x+.5}; s+=bodyBox(B,stage>=4)+bodyBox(B2,stage>=4)+belt(B,r)+belt(B2,r)+wins(base,B,dark?"dark":"day",r)+wins(base,B2,dark?"dark":"day",r)+doors(base,B,r); return s; }
+  s+=bodyBox(B,stage>=4); if(base==="lab2"||base==="tower") s+=belt(B,r);
+  s+=wins(base,B,dark?"dark":"day",r)+doors(base,B,r); return s; }
+function building(r,w,stage,o={}){
+  const spec=ISLE_B[r][w-1], base=spec.b, B=BASE[base], an=o.an, L=(n,svg)=> an===n?`<g class="is-grow">${svg}</g>`:svg;
+  const motif=(typeof MOTIF!=="undefined"&&typeof WEEK_MOTIF!=="undefined")?(MOTIF[WEEK_MOTIF[r][w-1]]||""):"";
+  const {x,y,dx,dy,h}=B, dark=!!o.dark, k=K(); let back="", core="", front="";
+  if(stage>=1 && stage<=3) back+=fence(false);
+  if(stage===1){ const fx=base==="twin"?[[x,y],[x+dx+.5,y],[x+dx+.5,y+dy],[x,y+dy]]:[[x,y],[x+dx,y],[x+dx,y+dy],[x,y+dy]];
+    fx.forEach(([a,c])=>core+=ln(P(a,c,0),P(a,c,.06),"#C8323C",1.8*k));
+    core+=`<polygon points="${pt(fx.map(([a,c])=>P(a,c,.05)))}" fill="none" stroke="#FFFFFF" stroke-width="${f1(1.2*k)}" stroke-dasharray="${f1(5*k)} ${f1(4*k)}"/>`;
+    const m=P(.8,.42); core+=L(1,`<ellipse cx="${f1(m[0])}" cy="${f1(m[1])}" rx="${f1(34*k)}" ry="${f1(13*k)}" style="fill:var(--is-soil-dk)"/><ellipse cx="${f1(m[0]-5*k)}" cy="${f1(m[1]-6*k)}" rx="${f1(20*k)}" ry="${f1(9*k)}" style="fill:${mix("var(--is-soil-dk)",14)}"/>`); }
+  const slab=()=>base==="twin"?box(x-.02,y-.02,dx+.54,dy+.04,.02,"#B9C0C7"):box(x-.02,y-.02,dx+.04,dy+.04,.02,"#B9C0C7");
+  if(stage>=2) core+=slab();
+  if(stage===2) core+=L(2, base==="twin"?frame(B)+frame({...B,x:B.x+.5}):frame(B));
+  const feats=spec.f;
+  const preF=stage>=4?feats.filter(f=>["tanks","freezer","steam","autoclave","waterTower","cabinets","rack","slopeRack","jigRack","partsBox","hoist","sampleFridge","basins","partition","thermoTower","vane","flagpole"].includes(f.split(":")[0])):[];
+  if(preF.length) core+=L(4,preF.map(f=>feature(f,B,r)).join(""));
+  if(stage>=3) core+=L(3,walls(base,B,r,spec,stage,dark));
+  if(stage>=4){ const post=feats.filter(f=>!preF.includes(f));
+    core+=(an===4?`<g class="is-grow">${roof(base,B,r,spec)}</g>`:roof(base,B,r,spec));
+    core+=L(4,post.map(f=>feature(f,B,r)).join("")+(post.some(f=>/crates|drums|truck|benches|gateBar|weights|conveyor|dominoes|workbench|signRack|washer|scale|magnifier|coins|bugLamp|washStation/.test(f))?"":plants()));
+    const ring=stage===5&&o.tier?TIER[o.tier]:null;
+    core+=`<g class="${an===4?"is-drop":""}">${sign(spec.s,motif,signPos(base,B,spec),r,ring)}</g>`; }
+  if(stage===5 && !dark){ const lit= base==="twin"? wins(base,B,"lit",r)+wins(base,{...B,x:B.x+.5},"lit",r) : wins(base,B,"lit",r);
+    core+=`<g class="is-glow">${lit}${base==="plaza"?"":bunting(B)}</g>`; }
+  if(dark){ const p=P(x+dx*.15,y+dy*.25,(base==="shed"?h+B.rise:h)+.3); core+=`<g class="is-blink"><g transform="translate(${f1(p[0])},${f1(p[1])}) scale(${k.toFixed(3)})"><path d="M0 -22 L20 12 L-20 12 Z" style="fill:var(--is-warn)" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/><path d="M2 -12 L-5 2 L1 2 L-2 10 L6 -3 L0 -3 Z" fill="#fff"/></g></g>`; }
+  if(stage===5 && !dark && !o.lite) front+=person(1.14,.82,r,"")+person(1.12,.58,r,"w2");
+  if(stage===2||stage===3) front+=crane();
+  if(stage>=1 && stage<=3) front+=fence(true);
+  let puff="";
+  if(typeof an==="number"){ const ctr=P(x+dx/2,y+dy/2,h/2); puff=`<g class="is-puff">${[[-30,8],[28,12],[0,-10],[-8,18]].map(([a,c])=>`<circle cx="${f1(ctr[0]+a*k)}" cy="${f1(ctr[1]+c*k)}" r="${f1(11*k)}" fill="#F3F1EC"/>`).join("")}</g>`; }
+  return back+`<g class="is-bldg" ${o.tap?`data-isle="take" data-r="${r}" data-w="${w}" role="button" tabindex="0" aria-label="${spec.n}，點一下看這週的一句話帶走"`:""}>${core}</g>`+front+puff;
+}
+function neighborLot(r,read){ let s=box(.06,.06,.88,.88,.02,"var(--is-soil)",0,{top:read?"var(--is-grass-hi)":"var(--is-soil)"});
+  if(!read) return s;
+  return s+shadow(.22,.28,.5,.42,.2)+box(.22,.28,.5,.42,.22,WALL,0,{right:WALLR,top:mix(rc(r),20)}); }
+
+/* ---------- 進度與題庫 ---------- */
+const keyOf=(r,w,d)=> d<3?`${r}-${w}-${d}`:(d===3?`T-${w}`:`C-${w}`);
+function stageOf(r,w){ let n=0; for(let d=0;d<5;d++) if(done[keyOf(r,w,d)]) n++; return n; }
+const readRole=(r,w)=>[0,1,2].some(d=>done[`${r}-${w}-${d}`]);
+function tierOf(r,w){ if(stageOf(r,w)<5) return null; if(r===role&&typeof weekTier==="function"){ try{ return weekTier(w)||"bronze"; }catch(e){} } return "bronze"; }
+function curWeek(){ const n=(typeof nextUnfinished==="function")?nextUnfinished():null; if(n) return n.w||1; for(let w=WEEKS;w>=1;w--) if(stageOf(role,w)===5) return w; return 1; }
+function qBlocks(keys,r){ const out=[]; keys.forEach(k=>{ const L=D.lessons[k]; if(!L) return;
+  const walk=b=>{ if(!b) return; if(b.k==="byrole") (b.r[r]||[]).forEach(walk); else if((b.k==="quiz"||b.k==="predict")&&b.key) out.push(b); };
+  L.forEach(sl=>sl.forEach(walk)); }); return out; }
+function takeOf(r,w){ let t=""; for(const k of [`${r}-${w}-0`,`${r}-${w}-1`,`${r}-${w}-2`]){ const L=D.lessons[k]; if(!L) continue; for(const sl of L) for(const b of sl){ if(b.k==="take"&&!t) t=b.t; } } return t; }
+const START_=(typeof START!=="undefined")?START:new Date(2026,9,19);
+function weekIdx(){ const n=new Date(); n.setHours(0,0,0,0); return Math.max(0,Math.floor((n-START_)/86400000/7)); }
+let trees=store.get("isleTrees",0);
+function rnd(seed){ let x=Math.sin(seed*9301+49297)*233280; return x-Math.floor(x); }
+/* 稽查員：每週一次，從作答過的題目裡抽一題，只有一次機會 */
+function inspState(){ const k=weekIdx(); let s=store.get("isleInsp",null);
+  if(s&&s.k===k) return s;
+  const pool=[]; ISLE_ROLES.forEach(r=>{ const ks=[]; for(let w=1;w<=WEEKS;w++){ for(let d=0;d<3;d++) ks.push(`${r}-${w}-${d}`); } qBlocks(ks,r).forEach(b=>{ if(quiz[b.key]!==undefined) pool.push(b.key); }); });
+  for(let w=1;w<=WEEKS;w++) qBlocks([`T-${w}`,`C-${w}`],role).forEach(b=>{ if(quiz[b.key]!==undefined && !pool.includes(b.key)) pool.push(b.key); });
+  if(!pool.length) return null;
+  s={k, key:pool[Math.floor(rnd(k+pool.length)*pool.length)], done:false}; store.set("isleInsp",s); return s; }
+/* 停電：每 2 週一次，從已完工的建築挑一棟，出那週的一題；沒處理就一直暗著 */
+function evState(){ const p=Math.floor(weekIdx()/2); let s=store.get("isleEv",null);
+  if(s && (!s.done || s.p===p)) return s;
+  const built=[]; ISLE_ROLES.forEach(r=>{ for(let w=1;w<=WEEKS;w++) if(stageOf(r,w)===5) built.push([r,w]); });
+  if(!built.length) return null;
+  const [r,w]=built[Math.floor(rnd(p*7+built.length)*built.length)];
+  const qs=qBlocks([`${r}-${w}-0`,`${r}-${w}-1`,`${r}-${w}-2`],r); if(!qs.length) return null;
+  s={p,r,w,key:qs[Math.floor(rnd(p+3)*qs.length)].key,done:false}; store.set("isleEv",s); return s; }
+function findQ(key){ for(const k in D.lessons){ const L=D.lessons[k]; for(const sl of L) for(const b of sl){ if(b.key===key) return b; if(b.k==="byrole") for(const r in b.r) for(const x of (b.r[r]||[])) if(x.key===key) return x; } } return null; }
+function qFrom(key){ for(const k in D.lessons){ const L=D.lessons[k]; for(const sl of L) for(const b of sl){ if(b.key===key || (b.k==="byrole" && Object.values(b.r).some(a=>(a||[]).some(x=>x.key===key)))){ const m=k.match(/^(\w+)-(\d+)-(\d)$/); if(m) return `${RN[m[1]]} 第 ${m[2]} 週`; const m2=k.match(/^([TC])-(\d+)$/); if(m2) return `第 ${m2[2]} 週${m2[1]==="T"?"共同課":"案例"}`; } } } return ""; }
+
+/* ---------- 場景 ---------- */
+const DEFS=`<defs><linearGradient id="is-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--is-sky-a)"/><stop offset="1" style="stop-color:var(--is-sky-b)"/></linearGradient>
+  <linearGradient id="is-mtl" x1="0" x2="1"><stop offset="0" stop-color="#F4F7F9"/><stop offset=".45" stop-color="#CDD5DC"/><stop offset="1" stop-color="#8D99A4"/></linearGradient></defs>`;
+const sprout=c=>`<ellipse cx="24" cy="44" rx="11" ry="3" fill="rgba(0,0,0,.18)"/><path d="M24 14 C18 4 8 6 8 6 C10 14 18 16 24 14 Z" fill="#7BC172" stroke="#3E8A3C" stroke-width="1.2"/><path d="M24 14 C30 3 41 5 41 5 C38 14 30 16 24 14 Z" fill="#5DAE58" stroke="#3E8A3C" stroke-width="1.2"/><path d="M24 14 v6" stroke="#3E8A3C" stroke-width="2"/><ellipse cx="24" cy="32" rx="12" ry="11" fill="#FFF8EC" stroke="#D8C7AA" stroke-width="1.2"/><path d="M11 26 a13 10 0 0 1 26 0 z" style="fill:${c}"/><rect x="9" y="25" width="30" height="3.2" rx="1.6" style="fill:${c}"/><circle cx="20" cy="32" r="1.6" fill="#2A2420"/><circle cx="28" cy="32" r="1.6" fill="#2A2420"/><path d="M21.5 36 q2.5 2 5 0" stroke="#2A2420" stroke-width="1.2" fill="none" stroke-linecap="round"/><ellipse cx="16.5" cy="35" rx="2" ry="1.2" fill="#F7B9B9"/><ellipse cx="31.5" cy="35" rx="2" ry="1.2" fill="#F7B9B9"/>`;
+const inspectorSVG=`<ellipse cx="24" cy="45" rx="10" ry="2.6" fill="rgba(0,0,0,.18)"/><rect x="15" y="22" width="18" height="21" rx="6" fill="#2D3E58"/><rect x="22.6" y="22" width="2.8" height="12" fill="#FFFFFF"/><circle cx="24" cy="15" r="8" fill="#F1C9A5"/><path d="M15.5 13 a8.5 7 0 0 1 17 0 z" fill="#FFFFFF" stroke="#B9C3CD"/><rect x="14" y="12" width="20" height="2.6" rx="1.3" fill="#FFFFFF" stroke="#B9C3CD" stroke-width=".6"/><circle cx="21" cy="16" r="1.2" fill="#2A2420"/><circle cx="27" cy="16" r="1.2" fill="#2A2420"/><rect x="28" y="26" width="10" height="13" rx="1.5" fill="#C8A26A" stroke="#8A6A3A" stroke-width=".8"/><rect x="30" y="29" width="6" height="8" fill="#FFFFFF"/>`;
+const boltSVG=`<circle cx="24" cy="24" r="20" style="fill:var(--is-warn)"/><path d="M26 8 L14 27 L23 27 L20 40 L34 20 L25 20 Z" fill="#fff"/>`;
+function siteSVG(w,opt={}){
+  PR={cx:180,cy:128,a:150,b:75};
+  const st=opt.stage??stageOf(role,w), ev=evState(), dark=!!(ev&&!ev.done&&ev.r===role&&ev.w===w);
+  let s=DEFS+`<rect x="-50" y="-50" width="460" height="420" fill="url(#is-sky)"/>`;
+  s+=box(-1.7,-1.7,3.4,3.4,.12,"var(--is-rock)",-.12,{top:"var(--is-grass)"});
+  s+=poly([P(1.04,-1.7),P(1.22,-1.7),P(1.22,1.7),P(1.04,1.7)],"var(--is-road)")+poly([P(-1.7,1.04),P(1.04,1.04),P(1.04,1.22),P(-1.7,1.22)],"var(--is-road)");
+  const sub=(ox,oy,sc,inner)=>{ const save=PR; PR={a:save.a*sc,b:save.b*sc,cx:save.cx+(ox-oy)*save.a,cy:save.cy+(ox+oy)*save.b}; const r=inner(); PR=save; return r; };
+  const others=ISLE_ROLES.filter(r=>r!==role);
+  s+=`<g opacity=".55">${sub(-.78,.12,.62,()=>neighborLot(others[0],readRole(others[0],w)))}${sub(.12,-.78,.62,()=>neighborLot(others[1],readRole(others[1],w)))}</g>`;
+  s+=box(0,0,1,1,.03,"var(--is-soil-dk)",0,{top:st>=4?"var(--is-grass-hi)":"var(--is-soil)"});
+  if(st===0){ const p=P(.5,.5,.05); s+=fence(false)+fence(true)+`<text x="${f1(p[0])}" y="${f1(p[1])}" text-anchor="middle" font-size="12" style="fill:var(--is-soil-ink)" font-family="var(--f-body)">本週的空地</text>`; }
+  else s+=`<g transform="translate(0,${f1(-.03*PR.a)})">${building(role,w,st,{an:opt.an,tier:tierOf(role,w),dark,tap:!opt.noTap})}</g>`;
+  const c=P(1.13,.3,0);
+  s+=`<g transform="translate(${f1(c[0]-17)},${f1(c[1]-38)})"><g class="is-bob"><svg width="34" height="34" viewBox="0 0 48 48">${sprout(rc(role))}</svg></g></g>`;
+  const ins=inspState();
+  if(!opt.noInsp && ins && !ins.done){ const q=P(1.13,.98,0);
+    s+=`<g data-isle="insp" role="button" tabindex="0" aria-label="稽查員來訪，點一下回答抽問" style="cursor:pointer"><g transform="translate(${f1(q[0]-18)},${f1(q[1]-44)})"><g class="is-hop"><svg width="36" height="36" viewBox="0 0 48 48">${inspectorSVG}</svg><g transform="translate(26,-8)"><circle r="9" style="fill:var(--is-warn)" stroke="#fff" stroke-width="2"/><text y="4.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="var(--f-body)">?</text></g></g></g></g>`; }
+  const vb=opt.vb||"0 0 360 306";
+  return `<svg viewBox="${vb}" role="img" aria-label="第 ${w} 週工地：${ISLE_B[role][w-1].n}">${s}</svg>`;
+}
+const MILE=[{w:4,n:"物流碼頭"},{w:8,n:"研發中心"},{w:12,n:"員工餐廳"},{w:16,n:"雪坊大門"}];
+const TREE_SPOTS=[[-.22,.4],[-.24,1.3],[-.2,2.2],[-.25,3.1],[.6,-.22],[1.5,-.25],[2.4,-.2],[3.3,-.24],[4.22,.6],[4.25,1.6],[4.2,2.5],[4.24,3.4],[.8,4.22],[1.8,4.24],[2.7,4.2],[3.6,4.24],[-.22,.9],[-.2,1.8],[-.24,2.7],[-.22,3.6],[1.1,-.2],[2,-.24],[2.9,-.22],[3.8,-.2]];
+function areaSVG(){
+  PR={cx:180,cy:40,a:34,b:17};
+  const order=[]; for(let j=0;j<4;j++) for(let k=0;k<4;k++) order.push([j%2?3-k:k, j]);
+  const full=w=>stageOf(role,w)===5, upTo=n=>{ for(let w=1;w<=n;w++) if(!full(w)) return false; return true; };
+  const ev=evState();
+  let s=DEFS+`<rect x="-50" y="-50" width="460" height="400" fill="url(#is-sky)"/>`;
+  s+=box(-.35,-.35,4.7,4.7,.4,"var(--is-rock)",-.4,{top:"var(--is-grass)"});
+  s+=`<polyline points="${pt(order.map(([i,j])=>P(i+.5,j+.5)))}" fill="none" style="stroke:var(--is-road)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`;
+  /* 里程碑：每 4 週一座大型設施 */
+  const mile=[
+    ()=>box(4.4,1.0,.9,.6,.06,"#B88A5A",-.1,{top:"#D0A574"})+box(4.62,1.1,.3,.3,.2,WALL,-.04,{top:mix(rc("prod"),20)}),
+    ()=>box(-1.1,1.2,.7,.7,.5,WALL,-.05,{right:WALLR,top:mix(rc("qa"),25)})+box(-1.0,1.3,.5,.08,.02,"#BFE0F2",.3),
+    ()=>box(1.3,4.45,.8,.55,.22,WALL,-.05,{right:WALLR,top:"#F2A33A"})+box(1.4,4.95,.6,.08,.02,"#E25B6B",.18),
+    ()=>box(-.9,-.9,.12,.12,.5,"#B9C0C7",-.05)+box(-.9,-.3,.12,.12,.5,"#B9C0C7",-.05)+box(-.9,-.9,.12,.72,.08,mix(rc(role),0),.45)
+  ];
+  MILE.forEach((m,i)=>{ if(upTo(m.w)) s+=mile[i](); });
+  const items=order.map(([i,j],w)=>[i+j,w+1,i,j]).sort((a,b)=>a[0]-b[0]);
+  for(let t=0;t<Math.min(trees,TREE_SPOTS.length);t++){ const [a,b]=TREE_SPOTS[t]; items.push([a+b-.5,"tree",a,b]); }
+  items.sort((a,b)=>a[0]-b[0]).forEach(([_,w,i,j])=>{
+    if(w==="tree"){ const p=P(i,j); s+=`<ellipse cx="${f1(p[0]+2)}" cy="${f1(p[1])}" rx="4" ry="1.6" style="fill:var(--is-shadow)"/>`+poly([[p[0],p[1]-13],[p[0]-4.5,p[1]-4],[p[0],p[1]-2]],"#6BB565")+poly([[p[0],p[1]-13],[p[0]+4.5,p[1]-4],[p[0],p[1]-2]],"#3F8A3C"); return; }
+    const save=PR; PR={...PR,cx:PR.cx+(i-j)*PR.a, cy:PR.cy+(i+j)*PR.b};
+    const st=stageOf(role,w);
+    if(st>0){ s+=box(.05,.05,.9,.9,.05,"var(--is-soil-dk)",0,{top:st>=4?"var(--is-grass-hi)":"var(--is-soil)"}); s+=`<g transform="translate(0,${f1(-.05*PR.a)})">${building(role,w,st,{tier:tierOf(role,w),lite:true,dark:!!(ev&&!ev.done&&ev.r===role&&ev.w===w)}).replace(/class="is-(walk|hop|blink|fan|steam|sway)[^"]*"/g,'')}</g>`; }
+    else { s+=box(.05,.05,.9,.9,.04,"var(--is-grass)",0,{top:mix("var(--is-grass)",10)}); const p=P(.5,.5,.04); s+=`<text x="${f1(p[0])}" y="${f1(p[1]+3)}" text-anchor="middle" font-size="8" style="fill:var(--is-soil-ink)" font-family="var(--f-mono)">W${w}</text>`; }
+    PR=save; });
+  return `<svg viewBox="-20 -6 400 250" role="img" aria-label="${RN[role]}的雪坊園區">${s}</svg>`;
+}
+
+/* ---------- 對外：給主程式呼叫 ---------- */
+function stepsHTML(st){ return `<div class="is-steps">${STG.map(([a,b],i)=>`<div class="${i<st?"on":i===st?"now":""}"><i>${i<st?"✓":i+1}</i><span>${a}<br>${b}</span></div>`).join("")}</div>`; }
+function alertsHTML(){ let s=""; const ev=evState(), ins=inspState();
+  if(ev&&!ev.done) s+=`<button type="button" class="is-alert ev" data-isle="ev"><span class="dot"></span><span><b>停電：${RN[ev.r]}第 ${ev.w} 週${esc(ISLE_B[ev.r][ev.w-1].n)}</b>　回答一題這週學過的內容，恢復供電</span></button>`;
+  if(ins&&!ins.done) s+=`<button type="button" class="is-alert in" data-isle="insp"><span class="dot"></span><span><b>稽查員來訪</b>　回答一題之前作答過的題目，答對園區多一棵樹</span></button>`;
+  return s; }
+let isleView="site", isleOpenNow=false;
+function panelHTML(){
+  const w=curWeek(), st=stageOf(role,w), spec=ISLE_B[role][w-1];
+  const tabs=`<div class="is-seg" role="group" aria-label="小島畫面"><button type="button" data-isle="vsite" aria-pressed="${isleView==="site"}">本週工地</button><button type="button" data-isle="varea" aria-pressed="${isleView==="area"}">看全區</button></div>`;
+  let body;
+  if(isleView==="area"){ let nf=0; for(let x=1;x<=WEEKS;x++) if(stageOf(role,x)===5) nf++;
+    body=`<div class="is-view">${areaSVG()}</div><p class="is-tap">${RN[role]} · 已蓋好 ${nf} / 16 棟 · 稽查員送的樹 ${trees} 棵</p>
+      <div class="is-ms">${MILE.map(m=>{ let ok=true; for(let x=1;x<=m.w;x++) if(stageOf(role,x)<5) ok=false; return `<div class="${ok?"on":""}"><b>${m.n}</b>${ok?"已解鎖":`第 ${m.w} 週解鎖`}</div>`; }).join("")}</div>`; }
+  else body=`<div class="is-view">${siteSVG(w)}</div>${stepsHTML(st)}<p class="is-tap">${st>=3?"點建築，看這週的一句話帶走":"每完成一關，工地就往前一個階段"}</p>`;
+  const nu=(typeof nextUnfinished==="function")?nextUnfinished():null;
+  return `<div class="is-head"><div class="t"><span class="is-eye">${RN[role]} · 第 ${w} 週 · ${st}/5 關</span><b>${esc(spec.n)}</b></div><button type="button" class="is-x" data-isle="close" aria-label="關閉小島">✕</button></div>
+    ${tabs}${alertsHTML()}${body}
+    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button>`;
+}
+function ensureHost(){ let h=document.getElementById("isle"); if(!h){ h=document.createElement("div"); h.id="isle"; h.hidden=true; h.innerHTML=`<div class="is-panel" role="dialog" aria-modal="true" aria-label="我的小島" id="isle-panel"></div><div id="isle-q" hidden><div class="is-qbox" role="dialog" aria-modal="true" id="isle-qbox"></div></div>`; document.body.appendChild(h); } return h; }
+function openIsle(v){ isleView=v||"site"; const h=ensureHost(); document.getElementById("isle-panel").innerHTML=panelHTML(); h.hidden=false; isleOpenNow=true; document.documentElement.classList.add("is-lock"); }
+function refresh(){ if(isleOpenNow) document.getElementById("isle-panel").innerHTML=panelHTML(); }
+function closeIsle(){ const h=document.getElementById("isle"); if(h) h.hidden=true; isleOpenNow=false; document.documentElement.classList.remove("is-lock"); }
+function askHTML(kind,b,from){ const ord=b.o.map((_,i)=>i).sort((a,c)=>rnd(a*13+b.key.length+c)-.5);
+  const who=kind==="insp"?inspectorSVG:boltSVG;
+  return `<div class="is-who"><svg viewBox="0 0 48 48">${who}</svg><div><span class="is-eye">${kind==="insp"?"稽查員抽問":"停電"} · ${esc(from)}</span><h3>${esc(b.q)}</h3></div></div>
+    <div class="is-opts" id="is-opts">${ord.map(i=>`<button type="button" data-isle="ans" data-kind="${kind}" data-i="${i}">${esc(b.o[i])}</button>`).join("")}</div><div id="is-fb"></div>`; }
+function qOpen(h){ document.getElementById("isle-qbox").innerHTML=h; document.getElementById("isle-q").hidden=false; }
+function qClose(){ const q=document.getElementById("isle-q"); if(q) q.hidden=true; }
+
+window.isleStripHTML=function(){
+  if(!STORE_OK) return "";
+  const w=curWeek(), st=stageOf(role,w), spec=ISLE_B[role][w-1], ev=evState(), ins=inspState();
+  PR={cx:180,cy:128,a:150,b:75}; const c=P(.5,.5,.3);
+  const badge=(ev&&!ev.done)||(ins&&!ins.done);
+  return `<button type="button" class="is-strip" data-isle="open" aria-label="打開我的小島">${siteSVG(w,{vb:`${f1(c[0]-120)} ${f1(c[1]-70)} 240 130`,noTap:true,noInsp:true})}
+    <span class="is-st"><b>${esc(spec.n)}</b><span>第 ${w} 週 · ${st}/5 關${st<5?` · 再 ${5-st} 關完工`:" · 已完工"}</span><em>${badge?`<i class="is-dot"></i>${ev&&!ev.done?"停電中":"稽查員來訪"}`:"看工地 ›"}</em></span></button>`;
+};
+window.isleCelHTML=function(w,d,conf){
+  if(!w || !STORE_OK) return `<div class="confetti">${conf}</div><div class="big">✓</div>`;
+  const st=stageOf(role,w); PR={cx:180,cy:128,a:150,b:75}; const c=P(.5,.5,.32);
+  return `<div class="is-cel">${siteSVG(w,{an:st,vb:`${f1(c[0]-150)} ${f1(c[1]-112)} 300 196`,noTap:true,noInsp:true,stage:st})}<span class="is-celtag">${esc(ISLE_B[role][w-1].n)} · ${STG[Math.max(0,st-1)][1]}${st===5?"完工":""}</span></div>`;
+};
+window.isleAreaCard=function(n,total){
+  if(!STORE_OK) return "";
+  let nf=0; for(let x=1;x<=WEEKS;x++) if(stageOf(role,x)===5) nf++;
+  return `<button type="button" class="is-areacard" data-isle="openarea" aria-label="看整座園區">${areaSVG()}<span><b>${RN[role]} · ${n} / ${total} 關</b><span>已蓋好 ${nf} / 16 棟 · 樹 ${trees} 棵 · 不用趕進度，一週 3 關就很好</span></span></button>`;
+};
+window.isleBoot=function(){ if(!STORE_OK) return; ensureHost(); evState(); inspState();
+  if(store.get("isleDay","")!==todayStr){ store.set("isleDay",todayStr); openIsle("site"); } };
+window.isleCodeSuffix=function(){ return trees>0?`~T${trees}`:""; };
+window.isleCodeRestore=function(c){ const m=String(c).match(/~T(\d{1,3})$/); if(m){ trees=Math.max(trees,+m[1]); store.set("isleTrees",trees); return c.slice(0,m.index); } return c; };
+
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-isle]"); if(!a){ if(e.target.id==="isle-q") qClose(); return; }
+  const act=a.dataset.isle;
+  if(act==="open"){ openIsle("site"); return; }
+  if(act==="openarea"){ openIsle("area"); return; }
+  if(act==="close"){ closeIsle(); return; }
+  if(act==="vsite"||act==="varea"){ isleView=act==="vsite"?"site":"area"; refresh(); return; }
+  if(act==="start"){ closeIsle(); const n=nextUnfinished(); tab="today"; review=null; if(n){ go(n.w,n.d); } else { viewing=null; slide=0; celebrate=false; render(); } return; }
+  if(act==="take"){ const r=a.dataset.r, w=+a.dataset.w, t=takeOf(r,w); if(stageOf(r,w)<3) return;
+    qOpen(`<span class="is-eye">${RN[r]} · 第 ${w} 週 · ${esc(ISLE_B[r][w-1].n)}</span><h3>${esc(D.weeks[r][w-1])}</h3>${t?`<div class="is-take">${esc(t)}</div>`:""}<button type="button" class="is-btn" data-isle="qclose">關閉</button>`); return; }
+  if(act==="qclose"){ qClose(); return; }
+  if(act==="insp"){ const s=inspState(); if(!s||s.done) return; const b=findQ(s.key); if(!b) return; ensureHost(); qOpen(askHTML("insp",b,qFrom(s.key))); return; }
+  if(act==="ev"){ const s=evState(); if(!s||s.done) return; const b=findQ(s.key); if(!b) return; ensureHost(); qOpen(askHTML("ev",b,`${RN[s.r]}第 ${s.w} 週${ISLE_B[s.r][s.w-1].n}`)); return; }
+  if(act==="ans"){ const kind=a.dataset.kind, s=kind==="insp"?inspState():evState(), b=findQ(s.key), i=+a.dataset.i, ok=i===b.a;
+    document.querySelectorAll("#is-opts button").forEach(x=>{ x.disabled=true; if(+x.dataset.i===b.a && (ok||kind==="insp")) x.classList.add("ok"); }); if(!ok) a.classList.add("no");
+    /* 停電答錯可以再試，所以先不揭曉答案與解析 */
+    const exp=(!ok&&kind==="ev")?"想想這週學過的重點，再選一次。":(b.y||b.r||"");
+    let msg;
+    if(kind==="insp"){ s.done=true; store.set("isleInsp",s); if(ok){ trees++; store.set("isleTrees",trees); } msg=ok?"答對了！園區多種了一棵樹。":"這次沒答對，稽查員下週還會再來。"; }
+    else { if(ok){ s.done=true; store.set("isleEv",s); } msg=ok?"答對了，恢復供電，燈亮起來了。":"這樣不對，看完說明再試一次。"; }
+    document.getElementById("is-fb").innerHTML=`<div class="is-fbx"><b>${msg}</b>${esc(exp)}</div><button type="button" class="is-btn primary" data-isle="${!ok&&kind==="ev"?"ev":"qdone"}">${!ok&&kind==="ev"?"再試一次":"回到小島"}</button>`;
+    return; }
+  if(act==="qdone"){ qClose(); refresh(); if(typeof render==="function" && !isleOpenNow) render(true); return; }
+});
+document.addEventListener("keydown",e=>{
+  const t=e.target.closest&&e.target.closest('[data-isle][role="button"]');
+  if((e.key==="Enter"||e.key===" ") && t){ e.preventDefault(); t.dispatchEvent(new MouseEvent("click",{bubbles:true})); }
+  if(e.key==="Escape"){ const q=document.getElementById("isle-q"); if(q&&!q.hidden) qClose(); else if(isleOpenNow) closeIsle(); }
+});
+window.__isleTest={building,siteSVG,areaSVG,stageOf,ISLE_B,setPR:p=>{PR=p;},DEFS,evState,inspState};
+})();
+
 window.addEventListener("resize",fitDeck);
 render();
+isleBoot();
 fetch("readings.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if(Array.isArray(j)&&j.length){ D.readings=j; if(tab==="know") render(); } }).catch(()=>{});
 fetch("foodsafety.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if(Array.isArray(j)&&j.length){ FSI=j; if(tab==="know") render(); } }).catch(()=>{});
 </script>
