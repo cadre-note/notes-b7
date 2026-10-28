@@ -461,8 +461,8 @@ html.is-lock body{overflow:hidden}
 .is-go{margin:12px 14px 14px;border:0;border-radius:16px;padding:12px 14px;background:linear-gradient(125deg,var(--accent),var(--accent-deep));color:var(--on-accent);display:grid;gap:2px;text-align:left;cursor:pointer}
 .is-go b{font-family:var(--f-display);font-size:1.12rem}
 .is-go span{font-size:.82rem;opacity:.92}
-#isle-q{position:fixed;inset:0;z-index:45;background:rgba(10,16,24,.45);display:grid;align-items:end}
-.is-qbox{background:var(--surface);color:var(--ink);border-radius:20px 20px 0 0;max-width:460px;width:100%;margin:0 auto;box-sizing:border-box;max-height:88vh;overflow:auto;
+#isle-q{position:fixed;inset:0;z-index:60;background:rgba(10,16,24,.45);display:grid;align-items:end}
+.is-qbox{background:var(--surface);color:var(--ink);border-radius:20px 20px 0 0;max-width:460px;width:100%;margin:0 auto;box-sizing:border-box;max-height:88vh;max-height:88dvh;overflow:auto;-webkit-overflow-scrolling:touch;
   padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:grid;gap:10px}
 .is-qbox h3{font-family:var(--f-display);margin:0;font-size:1.08rem;line-height:1.45;text-wrap:balance}
 .is-who{display:flex;gap:10px;align-items:center}
@@ -1395,20 +1395,23 @@ function weekIdx(){ const n=new Date(); n.setHours(0,0,0,0); return Math.max(0,M
 let trees=store.get("isleTrees",0);
 function rnd(seed){ let x=Math.sin(seed*9301+49297)*233280; return x-Math.floor(x); }
 /* 稽查員：每週一次，從作答過的題目裡抽一題，只有一次機會 */
-function inspState(){ const k=weekIdx(); let s=store.get("isleInsp",null);
+/* 稽查員與停電都分職務記錄：只出現目前職務自己的通知 */
+function byRole(name){ let a=store.get(name,null); if(a && (a.k!==undefined || a.p!==undefined)) a=null; return a||{}; }
+function saveRole(name,s){ const a=byRole(name); a[role]=s; store.set(name,a); }
+function inspState(){ const k=weekIdx(); let s=byRole("isleInsp")[role];
   if(s&&s.k===k) return s;
-  const pool=[]; ISLE_ROLES.forEach(r=>{ const ks=[]; for(let w=1;w<=WEEKS;w++){ for(let d=0;d<3;d++) ks.push(`${r}-${w}-${d}`); } qBlocks(ks,r).forEach(b=>{ if(quiz[b.key]!==undefined) pool.push(b.key); }); });
-  for(let w=1;w<=WEEKS;w++) qBlocks([`T-${w}`,`C-${w}`],role).forEach(b=>{ if(quiz[b.key]!==undefined && !pool.includes(b.key)) pool.push(b.key); });
+  const pool=[], ks=[]; for(let w=1;w<=WEEKS;w++){ for(let d=0;d<3;d++) ks.push(`${role}-${w}-${d}`); ks.push(`T-${w}`,`C-${w}`); }
+  qBlocks(ks,role).forEach(b=>{ if(quiz[b.key]!==undefined && !pool.includes(b.key)) pool.push(b.key); });
   if(!pool.length) return null;
-  s={k, key:pool[Math.floor(rnd(k+pool.length)*pool.length)], done:false}; store.set("isleInsp",s); return s; }
+  s={k, key:pool[Math.floor(rnd(k+pool.length)*pool.length)], done:false}; saveRole("isleInsp",s); return s; }
 /* 停電：每 2 週一次，從已完工的建築挑一棟，出那週的一題；沒處理就一直暗著 */
-function evState(){ const p=Math.floor(weekIdx()/2); let s=store.get("isleEv",null);
+function evState(){ const p=Math.floor(weekIdx()/2); let s=byRole("isleEv")[role];
   if(s && (!s.done || s.p===p)) return s;
-  const built=[]; ISLE_ROLES.forEach(r=>{ for(let w=1;w<=WEEKS;w++) if(stageOf(r,w)===5) built.push([r,w]); });
+  const built=[]; for(let w=1;w<=WEEKS;w++) if(stageOf(role,w)===5) built.push(w);
   if(!built.length) return null;
-  const [r,w]=built[Math.floor(rnd(p*7+built.length)*built.length)];
+  const w=built[Math.floor(rnd(p*7+built.length)*built.length)], r=role;
   const qs=qBlocks([`${r}-${w}-0`,`${r}-${w}-1`,`${r}-${w}-2`],r); if(!qs.length) return null;
-  s={p,r,w,key:qs[Math.floor(rnd(p+3)*qs.length)].key,done:false}; store.set("isleEv",s); return s; }
+  s={p,r,w,key:qs[Math.floor(rnd(p+3)*qs.length)].key,done:false}; saveRole("isleEv",s); return s; }
 function findQ(key){ for(const k in D.lessons){ const L=D.lessons[k]; for(const sl of L) for(const b of sl){ if(b.key===key) return b; if(b.k==="byrole") for(const r in b.r) for(const x of (b.r[r]||[])) if(x.key===key) return x; } } return null; }
 function qFrom(key){ for(const k in D.lessons){ const L=D.lessons[k]; for(const sl of L) for(const b of sl){ if(b.key===key || (b.k==="byrole" && Object.values(b.r).some(a=>(a||[]).some(x=>x.key===key)))){ const m=k.match(/^(\w+)-(\d+)-(\d)$/); if(m) return `${RN[m[1]]} 第 ${m[2]} 週`; const m2=k.match(/^([TC])-(\d+)$/); if(m2) return `第 ${m2[2]} 週${m2[1]==="T"?"共同課":"案例"}`; } } } return ""; }
 
@@ -1488,7 +1491,10 @@ function panelHTML(){
     ${tabs}${alertsHTML()}${body}
     <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button>`;
 }
-function ensureHost(){ let h=document.getElementById("isle"); if(!h){ h=document.createElement("div"); h.id="isle"; h.hidden=true; h.innerHTML=`<div class="is-panel" role="dialog" aria-modal="true" aria-label="我的小島" id="isle-panel"></div><div id="isle-q" hidden><div class="is-qbox" role="dialog" aria-modal="true" id="isle-qbox"></div></div>`; document.body.appendChild(h); } return h; }
+function ensureHost(){ let h=document.getElementById("isle"); if(!h){ h=document.createElement("div"); h.id="isle"; h.hidden=true; h.innerHTML=`<div class="is-panel" role="dialog" aria-modal="true" aria-label="我的小島" id="isle-panel"></div>`; document.body.appendChild(h); }
+  /* 問答視窗放在 body 最外層：iPhone 上放在可捲動的小島裡會被推到畫面外 */
+  if(!document.getElementById("isle-q")){ const q=document.createElement("div"); q.id="isle-q"; q.hidden=true; q.innerHTML=`<div class="is-qbox" role="dialog" aria-modal="true" id="isle-qbox"></div>`; document.body.appendChild(q); }
+  return h; }
 function openIsle(v){ isleView=v||"site"; const h=ensureHost(); document.getElementById("isle-panel").innerHTML=panelHTML(); h.hidden=false; isleOpenNow=true; document.documentElement.classList.add("is-lock"); }
 function refresh(){ if(isleOpenNow) document.getElementById("isle-panel").innerHTML=panelHTML(); }
 function closeIsle(){ const h=document.getElementById("isle"); if(h) h.hidden=true; isleOpenNow=false; document.documentElement.classList.remove("is-lock"); }
@@ -1540,8 +1546,8 @@ document.addEventListener("click",e=>{
     /* 停電答錯可以再試，所以先不揭曉答案與解析 */
     const exp=(!ok&&kind==="ev")?"想想這週學過的重點，再選一次。":(b.y||b.r||"");
     let msg;
-    if(kind==="insp"){ s.done=true; store.set("isleInsp",s); if(ok){ trees++; store.set("isleTrees",trees); } msg=ok?"答對了！園區多種了一棵樹。":"這次沒答對，稽查員下週還會再來。"; }
-    else { if(ok){ s.done=true; store.set("isleEv",s); } msg=ok?"答對了，恢復供電，燈亮起來了。":"這樣不對，看完說明再試一次。"; }
+    if(kind==="insp"){ s.done=true; saveRole("isleInsp",s); if(ok){ trees++; store.set("isleTrees",trees); } msg=ok?"答對了！園區多種了一棵樹。":"這次沒答對，稽查員下週還會再來。"; }
+    else { if(ok){ s.done=true; saveRole("isleEv",s); } msg=ok?"答對了，恢復供電，燈亮起來了。":"這樣不對，看完說明再試一次。"; }
     document.getElementById("is-fb").innerHTML=`<div class="is-fbx"><b>${msg}</b>${esc(exp)}</div><button type="button" class="is-btn primary" data-isle="${!ok&&kind==="ev"?"ev":"qdone"}">${!ok&&kind==="ev"?"再試一次":"回到小島"}</button>`;
     return; }
   if(act==="qdone"){ qClose(); refresh(); if(typeof render==="function" && !isleOpenNow) render(true); return; }
