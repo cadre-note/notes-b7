@@ -516,6 +516,11 @@ html.is-lock body{overflow:hidden}
 @keyframes is-glow{from{opacity:0}}
 @keyframes is-puff{0%{opacity:0;transform:scale(.3)}30%{opacity:.9}100%{opacity:0;transform:scale(1.9) translateY(-8px)}}
 @media (prefers-reduced-motion: reduce){.is-bob,.is-hop,.is-blink,.is-fan,.is-sway,.is-walk,.is-steam circle,.is-grow,.is-drop,.is-glow,.is-puff circle,.is-alert .dot,.is-dot{animation:none}.is-puff{display:none}}
+.is-ctx{border:1px solid var(--line);border-radius:12px;background:var(--tint);padding:6px 10px;font-size:.88rem}
+.is-ctx summary{cursor:pointer;font:500 .76rem var(--f-mono);letter-spacing:.06em;color:var(--muted)}
+.is-ctxin{display:grid;gap:8px;margin-top:6px;max-height:42vh;overflow:auto}
+.is-ctxin h3{font-size:.95rem;margin:0}
+.is-from{display:block;font-size:.9rem;line-height:1.4}
 
 .lead{margin:0}
 .adv.ex{border-left-color:var(--ok)}
@@ -1386,9 +1391,26 @@ function stageOf(r,w){ let n=0; for(let d=0;d<5;d++) if(done[keyOf(r,w,d)]) n++;
 const readRole=(r,w)=>[0,1,2].some(d=>done[`${r}-${w}-${d}`]);
 function tierOf(r,w){ if(stageOf(r,w)<5) return null; if(r===role&&typeof weekTier==="function"){ try{ return weekTier(w)||"bronze"; }catch(e){} } return "bronze"; }
 function curWeek(){ const n=(typeof nextUnfinished==="function")?nextUnfinished():null; if(n) return n.w||1; for(let w=WEEKS;w>=1;w--) if(stageOf(role,w)===5) return w; return 1; }
-function qBlocks(keys,r){ const out=[]; keys.forEach(k=>{ const L=D.lessons[k]; if(!L) return;
-  const walk=b=>{ if(!b) return; if(b.k==="byrole") (b.r[r]||[]).forEach(walk); else if((b.k==="quiz"||b.k==="predict")&&b.key) out.push(b); };
+/* 2026-10-28 逐題檢查：本身就完整、不需要附情境的題目 */
+const Q_SELF=new Set("q-qa1c q-qa1d q-qaR4c q-qaR4d q-qaR4e q-qaR5b q-qaR10b q-qa7c q-qa7bn q-qa8bn q-qaR12b q-qa13b q-qa14bn q-qaR15b q-qa16bn q-line1b q-line5b q-line6bn q-line7b q-lineR8b q-lineR12b q-line15b q-lineR16bn q-prodR8b q-prod12b q-prod13b q-prod1b q-T9n q-T10n q-T14n".split(" "));
+/* 要看別的表或前面情境才答得出來、附情境也接不上的題目：不出 */
+const Q_SKIP=new Set(["q-prodR9b","q-qa2b"]);
+/* 只收「看得懂前後文」的題目：案例題（要看整個案例）與「依上題」這類接續題不收 */
+function qBlocks(keys,r){ const out=[]; keys.forEach(k=>{ const L=D.lessons[k]; if(!L || /^C-/.test(k)) return;
+  const walk=b=>{ if(!b) return; if(b.k==="byrole") (b.r[r]||[]).forEach(walk); else if((b.k==="quiz"||b.k==="predict")&&b.key&&!Q_SKIP.has(b.key)&&!/上題|上一題/.test(b.q)) out.push(b); };
   L.forEach(sl=>sl.forEach(walk)); }); return out; }
+/* 題目情境：同一關裡、題目前面最近的一張表格或情境故事（課程開場的預測題本身就完整，不加） */
+function ctxOf(key){ for(const k in D.lessons){ const L=D.lessons[k];
+  for(let si=0;si<L.length;si++){ const sl=L[si], bi=sl.findIndex(b=>b.key===key); if(bi<0) continue;
+    const q=sl[bi]; if(Q_SELF.has(key) || (q.k==="predict" && sl.slice(0,bi).some(b=>b.k==="head"))) return [];
+    const near=b=>b&&(b.k==="table"||b.k==="story");
+    for(let j=bi-1;j>=0;j--) if(near(sl[j])) return sl[j].k==="story"&&j>0&&sl[j-1].k==="story"?[sl[j-1],sl[j]]:[sl[j]];
+    for(let s2=si-1;s2>=0;s2--){ const prev=L[s2]; for(let j=prev.length-1;j>=0;j--) if(near(prev[j])){ const out=[prev[j]]; if(prev[j].k==="story") for(let t=j-1;t>=0&&prev[t].k==="story"&&out.length<3;t--) out.unshift(prev[t]); return out; } }
+    return []; } } return []; }
+function ctxHTML(key){ const c=ctxOf(key); if(!c.length || typeof block!=="function") return "";
+  const S=new Set(Object.keys(D.gloss||{})); let h="";
+  try{ h=c.map(b=>block(b,null,S)).join(""); }catch(e){ return ""; }
+  return `<details class="is-ctx" open><summary>題目情境</summary><div class="is-ctxin">${h}</div></details>`; }
 function takeOf(r,w){ let t=""; for(const k of [`${r}-${w}-0`,`${r}-${w}-1`,`${r}-${w}-2`]){ const L=D.lessons[k]; if(!L) continue; for(const sl of L) for(const b of sl){ if(b.k==="take"&&!t) t=b.t; } } return t; }
 const START_=(typeof START!=="undefined")?START:new Date(2026,9,19);
 function weekIdx(){ const n=new Date(); n.setHours(0,0,0,0); return Math.max(0,Math.floor((n-START_)/86400000/7)); }
@@ -1398,14 +1420,16 @@ function rnd(seed){ let x=Math.sin(seed*9301+49297)*233280; return x-Math.floor(
 /* 稽查員與停電都分職務記錄：只出現目前職務自己的通知 */
 function byRole(name){ let a=store.get(name,null); if(a && (a.k!==undefined || a.p!==undefined)) a=null; return a||{}; }
 function saveRole(name,s){ const a=byRole(name); a[role]=s; store.set(name,a); }
+function okKey(key){ if(Q_SKIP.has(key)) return false; for(const k in D.lessons){ if(/^C-/.test(k)) continue; for(const sl of D.lessons[k]) for(const b of sl){ if(b.key===key) return !/上題|上一題/.test(b.q); if(b.k==="byrole") for(const r in b.r) for(const x of (b.r[r]||[])) if(x.key===key) return !/上題|上一題/.test(x.q); } } return false; }
 function inspState(){ const k=weekIdx(); let s=byRole("isleInsp")[role];
-  if(s&&s.k===k) return s;
+  if(s&&s.k===k&&(s.done||okKey(s.key))) return s;
   const pool=[], ks=[]; for(let w=1;w<=WEEKS;w++){ for(let d=0;d<3;d++) ks.push(`${role}-${w}-${d}`); ks.push(`T-${w}`,`C-${w}`); }
   qBlocks(ks,role).forEach(b=>{ if(quiz[b.key]!==undefined && !pool.includes(b.key)) pool.push(b.key); });
   if(!pool.length) return null;
   s={k, key:pool[Math.floor(rnd(k+pool.length)*pool.length)], done:false}; saveRole("isleInsp",s); return s; }
 /* 停電：每 2 週一次，從已完工的建築挑一棟，出那週的一題；沒處理就一直暗著 */
 function evState(){ const p=Math.floor(weekIdx()/2); let s=byRole("isleEv")[role];
+  if(s && !s.done && !okKey(s.key)) s=null;
   if(s && (!s.done || s.p===p)) return s;
   const built=[]; for(let w=1;w<=WEEKS;w++) if(stageOf(role,w)===5) built.push(w);
   if(!built.length) return null;
@@ -1489,7 +1513,7 @@ function panelHTML(){
   const nu=(typeof nextUnfinished==="function")?nextUnfinished():null;
   return `<div class="is-head"><div class="t"><span class="is-eye">${RN[role]} · 第 ${w} 週 · ${st}/5 關</span><b>${esc(spec.n)}</b></div><button type="button" class="is-x" data-isle="close" aria-label="關閉小島">✕</button></div>
     ${tabs}${alertsHTML()}${body}
-    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-3</p>`;
+    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-4</p>`;
 }
 function ensureHost(){ let h=document.getElementById("isle"); if(!h){ h=document.createElement("div"); h.id="isle"; h.hidden=true; h.innerHTML=`<div class="is-panel" role="dialog" aria-modal="true" aria-label="我的小島" id="isle-panel"></div>`; document.body.appendChild(h); }
   return h; }
@@ -1498,8 +1522,8 @@ function refresh(){ if(isleOpenNow) document.getElementById("isle-panel").innerH
 function closeIsle(){ const h=document.getElementById("isle"); if(h) h.hidden=true; isleOpenNow=false; qMode=false; document.documentElement.classList.remove("is-lock"); }
 function askHTML(kind,b,from){ const ord=b.o.map((_,i)=>i).sort((a,c)=>rnd(a*13+b.key.length+c)-.5);
   const who=kind==="insp"?inspectorSVG:boltSVG;
-  return `<div class="is-who"><svg viewBox="0 0 48 48">${who}</svg><div><span class="is-eye">${kind==="insp"?"稽查員抽問":"停電"} · ${esc(from)}</span><h3>${esc(b.q)}</h3></div></div>
-    <div class="is-opts" id="is-opts">${ord.map(i=>`<button type="button" data-isle="ans" data-kind="${kind}" data-i="${i}">${esc(b.o[i])}</button>`).join("")}</div><div id="is-fb"></div>`; }
+  return `<div class="is-who"><svg viewBox="0 0 48 48">${who}</svg><div><span class="is-eye">${kind==="insp"?"稽查員抽問":"停電"}</span><b class="is-from">出自 ${esc(from)}</b></div></div>
+    ${ctxHTML(b.key)}<h3>${esc(b.q)}</h3><div class="is-opts" id="is-opts">${ord.map(i=>`<button type="button" data-isle="ans" data-kind="${kind}" data-i="${i}">${esc(b.o[i])}</button>`).join("")}</div><div id="is-fb"></div>`; }
 /* 問答直接顯示在小島面板裡（不用浮動視窗）：iPhone 主畫面版的浮動視窗曾被推到畫面外 */
 let qMode=false;
 function qOpen(h){ if(!isleOpenNow) openIsle(isleView); qMode=true;
@@ -1559,7 +1583,7 @@ document.addEventListener("keydown",e=>{
   if((e.key==="Enter"||e.key===" ") && t){ e.preventDefault(); t.dispatchEvent(new MouseEvent("click",{bubbles:true})); }
   if(e.key==="Escape"){ if(qMode) qClose(); else if(isleOpenNow) closeIsle(); }
 });
-window.__isleTest={building,siteSVG,areaSVG,stageOf,ISLE_B,setPR:p=>{PR=p;},DEFS,evState,inspState};
+window.__isleTest={ctxOf,qBlocks,building,siteSVG,areaSVG,stageOf,ISLE_B,setPR:p=>{PR=p;},DEFS,evState,inspState};
 })();
 
 window.addEventListener("resize",fitDeck);
