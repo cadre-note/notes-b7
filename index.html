@@ -1488,7 +1488,7 @@ function siteSVG(w,opt={}){
   if(st===0){ const p=P(.5,.5,.05); s+=fence(false)+fence(true)+`<text x="${f1(p[0])}" y="${f1(p[1])}" text-anchor="middle" font-size="12" style="fill:var(--is-soil-ink)" font-family="var(--f-body)">本週的空地</text>`; }
   else s+=`<g transform="translate(0,${f1(-.03*PR.a)})">${building(role,w,st,{an:opt.an,tier:tierOf(role,w),dark,tap:!opt.noTap})}</g>`;
   const c=P(1.13,.3,0);
-  s+=`<g transform="translate(${f1(c[0]-17)},${f1(c[1]-38)})"><g class="is-bob"><svg width="34" height="34" viewBox="0 0 48 48">${sprout(rc(role))}</svg></g></g>`;
+  /* 2026-10-28：圖上不放小芽 */
   const ins=inspState();
   if(!opt.noInsp && ((ins && !ins.done) || opt.forceInsp)){ const q=P(1.13,.98,0);
     const bubble=opt.happy?"":`<g transform="translate(26,-8)"><circle r="9" style="fill:var(--is-warn)" stroke="#fff" stroke-width="2"/><text y="4.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="var(--f-body)">?</text></g>`;
@@ -1547,7 +1547,7 @@ function panelHTML(){
   const nu=(typeof nextUnfinished==="function")?nextUnfinished():null;
   return `<div class="is-head"><div class="t"><span class="is-eye">${RN[role]} · 第 ${w} 週 · ${st}/5 關</span><b>${esc(spec.n)}</b></div><button type="button" class="is-x" data-isle="close" aria-label="關閉小島">✕</button></div>
     ${tabs}${alertsHTML()}${body}
-    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-9</p>`;
+    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-10</p>`;
 }
 function ensureHost(){ let h=document.getElementById("isle"); if(!h){ h=document.createElement("div"); h.id="isle"; h.hidden=true; h.innerHTML=`<div class="is-panel" role="dialog" aria-modal="true" aria-label="我的小島" id="isle-panel"></div>`; document.body.appendChild(h); }
   return h; }
@@ -1596,7 +1596,7 @@ window.isleCelHTML=function(w,d,conf){
   const st=stageOf(role,w); PR={cx:180,cy:128,a:150,b:75}; const c=P(.5,.5,.32);
   /* 小芽一句話週報：整週完工時，小芽說這週的「一句話帶走」 */
   const tk=st===5?takeOf(role,w):"";
-  const say=tk?`<div class="is-say"><svg viewBox="0 0 48 48">${sprout(rc(role))}</svg><p><b>第 ${w} 週完工！</b>這週帶走：${esc(tk)}</p></div>`:"";
+  const say=tk?`<div class="is-say"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#FFFFFF" stroke="${rc(role)}" stroke-width="3"/><g transform="translate(10,10) scale(1.17)" fill="none" stroke="${rc(role)}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${(typeof MOTIF!=="undefined"&&typeof WEEK_MOTIF!=="undefined"&&MOTIF[WEEK_MOTIF[role][w-1]])||""}</g></svg><p><b>第 ${w} 週完工！</b>這週帶走：${esc(tk)}</p></div>`:"";
   return `<div class="is-cel">${siteSVG(w,{an:st,vb:`${f1(c[0]-150)} ${f1(c[1]-112)} 300 196`,noTap:true,noInsp:true,noDark:true,stage:st})}<span class="is-celtag">${esc(ISLE_B[role][w-1].n)} · ${STG[Math.max(0,st-1)][1]}${st===5?"完工":""}</span>${say}</div>`;
 };
 window.isleAreaCard=function(n,total){
