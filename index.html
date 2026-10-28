@@ -462,8 +462,8 @@ html.is-lock body{overflow:hidden}
 .is-go b{font-family:var(--f-display);font-size:1.12rem}
 .is-go span{font-size:.82rem;opacity:.92}
 #isle-q{position:fixed;inset:0;z-index:60;background:rgba(10,16,24,.45);display:grid;align-items:end}
-.is-qbox{background:var(--surface);color:var(--ink);border-radius:20px 20px 0 0;max-width:460px;width:100%;margin:0 auto;box-sizing:border-box;max-height:88vh;max-height:88dvh;overflow:auto;-webkit-overflow-scrolling:touch;
-  padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:grid;gap:10px}
+.is-qbox{color:var(--ink);padding:4px 16px 18px;display:grid;gap:12px}
+.is-ver{margin:0 0 10px;text-align:center;font-size:.68rem;color:var(--muted)}
 .is-qbox h3{font-family:var(--f-display);margin:0;font-size:1.08rem;line-height:1.45;text-wrap:balance}
 .is-who{display:flex;gap:10px;align-items:center}
 .is-who svg{width:44px;height:44px;flex:none}
@@ -1489,21 +1489,23 @@ function panelHTML(){
   const nu=(typeof nextUnfinished==="function")?nextUnfinished():null;
   return `<div class="is-head"><div class="t"><span class="is-eye">${RN[role]} · 第 ${w} 週 · ${st}/5 關</span><b>${esc(spec.n)}</b></div><button type="button" class="is-x" data-isle="close" aria-label="關閉小島">✕</button></div>
     ${tabs}${alertsHTML()}${body}
-    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button>`;
+    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-3</p>`;
 }
 function ensureHost(){ let h=document.getElementById("isle"); if(!h){ h=document.createElement("div"); h.id="isle"; h.hidden=true; h.innerHTML=`<div class="is-panel" role="dialog" aria-modal="true" aria-label="我的小島" id="isle-panel"></div>`; document.body.appendChild(h); }
-  /* 問答視窗放在 body 最外層：iPhone 上放在可捲動的小島裡會被推到畫面外 */
-  if(!document.getElementById("isle-q")){ const q=document.createElement("div"); q.id="isle-q"; q.hidden=true; q.innerHTML=`<div class="is-qbox" role="dialog" aria-modal="true" id="isle-qbox"></div>`; document.body.appendChild(q); }
   return h; }
 function openIsle(v){ isleView=v||"site"; const h=ensureHost(); document.getElementById("isle-panel").innerHTML=panelHTML(); h.hidden=false; isleOpenNow=true; document.documentElement.classList.add("is-lock"); }
 function refresh(){ if(isleOpenNow) document.getElementById("isle-panel").innerHTML=panelHTML(); }
-function closeIsle(){ const h=document.getElementById("isle"); if(h) h.hidden=true; isleOpenNow=false; document.documentElement.classList.remove("is-lock"); }
+function closeIsle(){ const h=document.getElementById("isle"); if(h) h.hidden=true; isleOpenNow=false; qMode=false; document.documentElement.classList.remove("is-lock"); }
 function askHTML(kind,b,from){ const ord=b.o.map((_,i)=>i).sort((a,c)=>rnd(a*13+b.key.length+c)-.5);
   const who=kind==="insp"?inspectorSVG:boltSVG;
   return `<div class="is-who"><svg viewBox="0 0 48 48">${who}</svg><div><span class="is-eye">${kind==="insp"?"稽查員抽問":"停電"} · ${esc(from)}</span><h3>${esc(b.q)}</h3></div></div>
     <div class="is-opts" id="is-opts">${ord.map(i=>`<button type="button" data-isle="ans" data-kind="${kind}" data-i="${i}">${esc(b.o[i])}</button>`).join("")}</div><div id="is-fb"></div>`; }
-function qOpen(h){ document.getElementById("isle-qbox").innerHTML=h; document.getElementById("isle-q").hidden=false; }
-function qClose(){ const q=document.getElementById("isle-q"); if(q) q.hidden=true; }
+/* 問答直接顯示在小島面板裡（不用浮動視窗）：iPhone 主畫面版的浮動視窗曾被推到畫面外 */
+let qMode=false;
+function qOpen(h){ if(!isleOpenNow) openIsle(isleView); qMode=true;
+  document.getElementById("isle-panel").innerHTML=`<div class="is-head"><div class="t"><span class="is-eye">小島</span></div><button type="button" class="is-x" data-isle="qclose" aria-label="返回小島">✕</button></div><div class="is-qbox">${h}</div>`;
+  const host=document.getElementById("isle"); if(host) host.scrollTop=0; }
+function qClose(){ if(!qMode) return; qMode=false; refresh(); }
 
 window.isleStripHTML=function(){
   if(!STORE_OK) return "";
@@ -1529,7 +1531,7 @@ window.isleCodeSuffix=function(){ return trees>0?`~T${trees}`:""; };
 window.isleCodeRestore=function(c){ const m=String(c).match(/~T(\d{1,3})$/); if(m){ trees=Math.max(trees,+m[1]); store.set("isleTrees",trees); return c.slice(0,m.index); } return c; };
 
 document.addEventListener("click",e=>{
-  const a=e.target.closest("[data-isle]"); if(!a){ if(e.target.id==="isle-q") qClose(); return; }
+  const a=e.target.closest("[data-isle]"); if(!a) return;
   const act=a.dataset.isle;
   if(act==="open"){ openIsle("site"); return; }
   if(act==="openarea"){ openIsle("area"); return; }
@@ -1555,7 +1557,7 @@ document.addEventListener("click",e=>{
 document.addEventListener("keydown",e=>{
   const t=e.target.closest&&e.target.closest('[data-isle][role="button"]');
   if((e.key==="Enter"||e.key===" ") && t){ e.preventDefault(); t.dispatchEvent(new MouseEvent("click",{bubbles:true})); }
-  if(e.key==="Escape"){ const q=document.getElementById("isle-q"); if(q&&!q.hidden) qClose(); else if(isleOpenNow) closeIsle(); }
+  if(e.key==="Escape"){ if(qMode) qClose(); else if(isleOpenNow) closeIsle(); }
 });
 window.__isleTest={building,siteSVG,areaSVG,stageOf,ISLE_B,setPR:p=>{PR=p;},DEFS,evState,inspState};
 })();
