@@ -418,7 +418,7 @@ ol.toc span{font-family:var(--f-mono);color:var(--accent);min-width:2.4em}
 .pseg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .nextm{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center}
 .nextm .nm2 svg{width:64px;height:auto;display:block}
-.thm{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:2px 8px;font:500 .75rem var(--f-body);cursor:pointer;margin-right:4px}
+.thm{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:2px 8px;font:500 .8rem var(--f-body);cursor:pointer;margin-right:4px}
 .hdtools{display:flex;align-items:center;gap:4px;margin-left:auto}
 /* ===== 本週工地（小島）：色票跟著學堂的深淺色 ===== */
 :root{--is-prod:#3B5BDB;--is-qa:#1E8A5A;--is-line:#D2602A;--is-sky-a:#CBE8F3;--is-sky-b:#9FD0E4;
@@ -551,6 +551,9 @@ html.is-lock body{overflow:hidden}
 .is-thumb.alert{border-color:#FFD2D3}
 .is-thumb .is-dot{width:7px;height:7px}
 @media (prefers-reduced-motion: reduce){.is-chip .dot{animation:none}}
+/* 小螢幕（375×667 等）完成畫面：圖縮小、按鈕固定在卡片底部，不用往下捲 */
+.celebrate:has(.is-cel) .nav2{position:sticky;bottom:-14px;background:var(--surface);padding:8px 0 10px;margin-top:auto;width:100%;justify-content:center}
+@media (max-height:760px){.is-cel svg{max-height:24vh}.celebrate:has(.is-cel) h2{font-size:1.2rem}.celebrate:has(.is-cel) .cheer{font-size:.95rem}}
 /* ===== 共同知識卡片（基礎班、進階班共用）===== */
 :root{--kx-apricot:#E9893F;--kx-apricot-soft:#FDEBD9;--kx-apricot-ink:#9A4F12}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--kx-apricot:#F2A866;--kx-apricot-soft:#3A2A1C;--kx-apricot-ink:#F7C99B}}
