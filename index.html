@@ -1513,30 +1513,32 @@ function panelHTML(){
   const nu=(typeof nextUnfinished==="function")?nextUnfinished():null;
   return `<div class="is-head"><div class="t"><span class="is-eye">${RN[role]} · 第 ${w} 週 · ${st}/5 關</span><b>${esc(spec.n)}</b></div><button type="button" class="is-x" data-isle="close" aria-label="關閉小島">✕</button></div>
     ${tabs}${alertsHTML()}${body}
-    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-4</p>`;
+    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-5</p>`;
 }
 function ensureHost(){ let h=document.getElementById("isle"); if(!h){ h=document.createElement("div"); h.id="isle"; h.hidden=true; h.innerHTML=`<div class="is-panel" role="dialog" aria-modal="true" aria-label="我的小島" id="isle-panel"></div>`; document.body.appendChild(h); }
   return h; }
 function openIsle(v){ isleView=v||"site"; const h=ensureHost(); document.getElementById("isle-panel").innerHTML=panelHTML(); h.hidden=false; isleOpenNow=true; document.documentElement.classList.add("is-lock"); }
 function refresh(){ if(isleOpenNow) document.getElementById("isle-panel").innerHTML=panelHTML(); }
-function closeIsle(){ const h=document.getElementById("isle"); if(h) h.hidden=true; isleOpenNow=false; qMode=false; document.documentElement.classList.remove("is-lock"); }
+function closeIsle(){ const h=document.getElementById("isle"); if(h) h.hidden=true; isleOpenNow=false; qMode=false; qOut=false; document.documentElement.classList.remove("is-lock"); }
 function askHTML(kind,b,from){ const ord=b.o.map((_,i)=>i).sort((a,c)=>rnd(a*13+b.key.length+c)-.5);
   const who=kind==="insp"?inspectorSVG:boltSVG;
   return `<div class="is-who"><svg viewBox="0 0 48 48">${who}</svg><div><span class="is-eye">${kind==="insp"?"稽查員抽問":"停電"}</span><b class="is-from">出自 ${esc(from)}</b></div></div>
     ${ctxHTML(b.key)}<h3>${esc(b.q)}</h3><div class="is-opts" id="is-opts">${ord.map(i=>`<button type="button" data-isle="ans" data-kind="${kind}" data-i="${i}">${esc(b.o[i])}</button>`).join("")}</div><div id="is-fb"></div>`; }
 /* 問答直接顯示在小島面板裡（不用浮動視窗）：iPhone 主畫面版的浮動視窗曾被推到畫面外 */
-let qMode=false;
-function qOpen(h){ if(!isleOpenNow) openIsle(isleView); qMode=true;
+let qMode=false, qOut=false;
+function qOpen(h){ if(!isleOpenNow){ qOut=true; openIsle(isleView); } qMode=true;
   document.getElementById("isle-panel").innerHTML=`<div class="is-head"><div class="t"><span class="is-eye">小島</span></div><button type="button" class="is-x" data-isle="qclose" aria-label="返回小島">✕</button></div><div class="is-qbox">${h}</div>`;
   const host=document.getElementById("isle"); if(host) host.scrollTop=0; }
-function qClose(){ if(!qMode) return; qMode=false; refresh(); }
+function qClose(){ if(!qMode) return; qMode=false; if(qOut){ qOut=false; closeIsle(); if(typeof render==="function") render(true); return; } refresh(); }
 
 window.isleStripHTML=function(){
   if(!STORE_OK) return "";
   const w=curWeek(), st=stageOf(role,w), spec=ISLE_B[role][w-1], ev=evState(), ins=inspState();
   PR={cx:180,cy:128,a:150,b:75}; const c=P(.5,.5,.3);
   const badge=(ev&&!ev.done)||(ins&&!ins.done);
-  return `<button type="button" class="is-strip" data-isle="open" aria-label="打開我的小島">${siteSVG(w,{vb:`${f1(c[0]-120)} ${f1(c[1]-70)} 240 130`,noTap:true,noInsp:true})}
+  /* 有停電或稽查員時，點縮圖直接進題目；答完回到課程 */
+  const go=ev&&!ev.done?"ev":(ins&&!ins.done?"insp":"open");
+  return `<button type="button" class="is-strip" data-isle="${go}" aria-label="${go==="ev"?"處理停電":go==="insp"?"回答稽查員抽問":"打開我的小島"}">${siteSVG(w,{vb:`${f1(c[0]-120)} ${f1(c[1]-70)} 240 130`,noTap:true,noInsp:true})}
     <span class="is-st"><b>${esc(spec.n)}</b><span>第 ${w} 週 · ${st}/5 關${st<5?` · 再 ${5-st} 關完工`:" · 已完工"}</span><em>${badge?`<i class="is-dot"></i>${ev&&!ev.done?"停電中":"稽查員來訪"}`:"看工地 ›"}</em></span></button>`;
 };
 window.isleCelHTML=function(w,d,conf){
@@ -1574,9 +1576,9 @@ document.addEventListener("click",e=>{
     let msg;
     if(kind==="insp"){ s.done=true; saveRole("isleInsp",s); if(ok){ trees++; store.set("isleTrees",trees); } msg=ok?"答對了！園區多種了一棵樹。":"這次沒答對，稽查員下週還會再來。"; }
     else { if(ok){ s.done=true; saveRole("isleEv",s); } msg=ok?"答對了，恢復供電，燈亮起來了。":"這樣不對，看完說明再試一次。"; }
-    document.getElementById("is-fb").innerHTML=`<div class="is-fbx"><b>${msg}</b>${esc(exp)}</div><button type="button" class="is-btn primary" data-isle="${!ok&&kind==="ev"?"ev":"qdone"}">${!ok&&kind==="ev"?"再試一次":"回到小島"}</button>`;
+    document.getElementById("is-fb").innerHTML=`<div class="is-fbx"><b>${msg}</b>${esc(exp)}</div><button type="button" class="is-btn primary" data-isle="${!ok&&kind==="ev"?"ev":"qdone"}">${!ok&&kind==="ev"?"再試一次":(qOut?"回到課程":"回到小島")}</button>`;
     return; }
-  if(act==="qdone"){ qClose(); refresh(); if(typeof render==="function" && !isleOpenNow) render(true); return; }
+  if(act==="qdone"){ qClose(); return; }
 });
 document.addEventListener("keydown",e=>{
   const t=e.target.closest&&e.target.closest('[data-isle][role="button"]');
