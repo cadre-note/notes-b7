@@ -531,6 +531,9 @@ html.is-lock body{overflow:hidden}
 @keyframes is-stamp{from{opacity:0;transform:scale(2.4) rotate(-14deg)}to{opacity:1;transform:scale(1) rotate(-8deg)}}
 @keyframes is-late{from{opacity:0;transform:translateY(6px)}}
 @media (prefers-reduced-motion: reduce){.is-burst,.is-spark{display:none}.is-stamp,.is-late{animation:none}}
+.is-say{display:flex;gap:8px;align-items:flex-start;text-align:left;max-width:360px;width:100%;animation:is-late .4s ease-out 1.1s both}
+.is-say svg{width:36px;height:36px;flex:none}
+.is-say p{margin:0;background:var(--accent-soft);color:var(--ink);border-radius:4px 14px 14px 14px;padding:8px 12px;font-size:.88rem;line-height:1.55}
 
 .lead{margin:0}
 .adv.ex{border-left-color:var(--ok)}
@@ -1457,7 +1460,7 @@ const inspectorSVG=`<ellipse cx="24" cy="45" rx="10" ry="2.6" fill="rgba(0,0,0,.
 const boltSVG=`<circle cx="24" cy="24" r="20" style="fill:var(--is-warn)"/><path d="M26 8 L14 27 L23 27 L20 40 L34 20 L25 20 Z" fill="#fff"/>`;
 function siteSVG(w,opt={}){
   PR={cx:180,cy:128,a:150,b:75};
-  const st=opt.stage??stageOf(role,w), ev=evState(), dark=!!(ev&&!ev.done&&ev.r===role&&ev.w===w);
+  const st=opt.stage??stageOf(role,w), ev=evState(), dark=!opt.noDark&&!!(ev&&!ev.done&&ev.r===role&&ev.w===w);
   let s=DEFS+`<rect x="-50" y="-50" width="460" height="420" fill="url(#is-sky)"/>`;
   s+=box(-1.7,-1.7,3.4,3.4,.12,"var(--is-rock)",-.12,{top:"var(--is-grass)"});
   s+=poly([P(1.04,-1.7),P(1.22,-1.7),P(1.22,1.7),P(1.04,1.7)],"var(--is-road)")+poly([P(-1.7,1.04),P(1.04,1.04),P(1.04,1.22),P(-1.7,1.22)],"var(--is-road)");
@@ -1527,7 +1530,7 @@ function panelHTML(){
   const nu=(typeof nextUnfinished==="function")?nextUnfinished():null;
   return `<div class="is-head"><div class="t"><span class="is-eye">${RN[role]} · 第 ${w} 週 · ${st}/5 關</span><b>${esc(spec.n)}</b></div><button type="button" class="is-x" data-isle="close" aria-label="關閉小島">✕</button></div>
     ${tabs}${alertsHTML()}${body}
-    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-7</p>`;
+    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-8</p>`;
 }
 function ensureHost(){ let h=document.getElementById("isle"); if(!h){ h=document.createElement("div"); h.id="isle"; h.hidden=true; h.innerHTML=`<div class="is-panel" role="dialog" aria-modal="true" aria-label="我的小島" id="isle-panel"></div>`; document.body.appendChild(h); }
   return h; }
@@ -1574,7 +1577,10 @@ window.isleCelHTML=function(w,d,conf){
   if(!w || !STORE_OK) return `<div class="confetti">${conf}</div><div class="big">✓</div>`;
   markSeen();
   const st=stageOf(role,w); PR={cx:180,cy:128,a:150,b:75}; const c=P(.5,.5,.32);
-  return `<div class="is-cel">${siteSVG(w,{an:st,vb:`${f1(c[0]-150)} ${f1(c[1]-112)} 300 196`,noTap:true,noInsp:true,stage:st})}<span class="is-celtag">${esc(ISLE_B[role][w-1].n)} · ${STG[Math.max(0,st-1)][1]}${st===5?"完工":""}</span></div>`;
+  /* 小芽一句話週報：整週完工時，小芽說這週的「一句話帶走」 */
+  const tk=st===5?takeOf(role,w):"";
+  const say=tk?`<div class="is-say"><svg viewBox="0 0 48 48">${sprout(rc(role))}</svg><p><b>第 ${w} 週完工！</b>這週帶走：${esc(tk)}</p></div>`:"";
+  return `<div class="is-cel">${siteSVG(w,{an:st,vb:`${f1(c[0]-150)} ${f1(c[1]-112)} 300 196`,noTap:true,noInsp:true,noDark:true,stage:st})}<span class="is-celtag">${esc(ISLE_B[role][w-1].n)} · ${STG[Math.max(0,st-1)][1]}${st===5?"完工":""}</span>${say}</div>`;
 };
 window.isleAreaCard=function(n,total){
   if(!STORE_OK) return "";
