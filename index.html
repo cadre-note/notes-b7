@@ -551,6 +551,39 @@ html.is-lock body{overflow:hidden}
 .is-thumb.alert{border-color:#FFD2D3}
 .is-thumb .is-dot{width:7px;height:7px}
 @media (prefers-reduced-motion: reduce){.is-chip .dot{animation:none}}
+/* ===== 共同知識卡片（基礎班、進階班共用）===== */
+:root{--kx-apricot:#E9893F;--kx-apricot-soft:#FDEBD9;--kx-apricot-ink:#9A4F12}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--kx-apricot:#F2A866;--kx-apricot-soft:#3A2A1C;--kx-apricot-ink:#F7C99B}}
+:root[data-theme="dark"]{--kx-apricot:#F2A866;--kx-apricot-soft:#3A2A1C;--kx-apricot-ink:#F7C99B}
+.kx-tab{display:inline-flex;gap:5px;align-items:center;justify-content:center}.kx-tab svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.kx-wrap{display:grid;gap:12px}
+.kx-list{display:grid;gap:10px}
+.kx{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.kx>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:44px minmax(0,1fr) 18px;gap:10px;align-items:center;padding:12px}
+.kx>summary::-webkit-details-marker{display:none}
+.kx>summary:focus-visible,.kx-all:focus-visible{outline:2px solid var(--kx-apricot);outline-offset:2px}
+.kx-ic{width:44px;height:44px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);box-shadow:0 0 0 3px var(--kx-apricot-soft);display:grid;place-items:center;flex:none}
+.kx-ic svg{width:24px;height:24px;fill:none;stroke:var(--accent);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.kx-ic.sm{width:32px;height:32px}.kx-ic.sm svg{width:18px;height:18px}
+.kx-hd{min-width:0;display:grid;gap:6px}
+.kx-hd b{font-family:var(--f-display);font-size:1.05rem;line-height:1.3}
+.kx-hd b em{font-style:normal;font:500 .72rem var(--f-body);color:var(--muted);margin-left:6px}
+.kx-chips{display:flex;flex-wrap:wrap;gap:6px}
+.kx-chip{display:inline-grid;line-height:1.15;background:var(--kx-apricot-soft);border-radius:10px;padding:4px 9px}
+.kx-chip strong{font:700 1.02rem var(--f-body);color:var(--kx-apricot-ink);font-variant-numeric:tabular-nums}
+.kx-chip small{font-size:.7rem;color:var(--muted)}
+.kx-chev{width:18px;height:18px;transition:transform .2s;stroke:var(--muted);fill:none;stroke-width:2}
+.kx[open]>summary .kx-chev{transform:rotate(180deg)}
+.kx-body{padding:0 14px 14px 66px}
+.kx-body>ul{margin:0;padding-left:1.1em;display:grid;gap:5px}
+.kx-body>ul li{font-size:.94rem}
+.kx-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.8rem;color:var(--muted);margin:2px 0}
+.kx-all{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:3px 12px;font:inherit;cursor:pointer;white-space:nowrap}
+.kx-ntop{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:2px}
+.kx-stamp{font:600 .74rem var(--f-mono,ui-monospace,monospace);color:var(--kx-apricot-ink);border:1.5px solid var(--kx-apricot);border-radius:6px;padding:1px 6px;transform:rotate(-2deg)}
+.kx-src{font-size:.74rem;background:var(--accent-soft);border-radius:99px;padding:1px 9px;color:var(--muted)}
+@media (max-width:380px){.kx-body{padding-left:14px}}
+@media (prefers-reduced-motion: reduce){.kx-chev{transition:none}}
 
 .lead{margin:0}
 .adv.ex{border-left-color:var(--ok)}
@@ -990,22 +1023,22 @@ function renderFlow(){
 function fsHTML(){
   if (!FSI.length) return `<section class="card"><h3>食安事件</h3><p class="small">每週二更新一則可以查證的真實食安事件，整理成「發生什麼、根本原因、對應要求、如果在我們廠怎麼擋」。第一則預計 10/20（二）上線。</p></section>`;
   const s=[...FSI].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,6);
-  return `<h3>食安事件</h3><p class="small">每週二更新一則可以查證的真實食安事件。</p>`+s.map(e=>`<article class="reading fsx"><span class="src">${esc(e.date)} · ${esc(e.source||"")}</span>${e.url?`<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.title)}</a>`:`<b>${esc(e.title)}</b>`}
+  return `<h3>食安事件</h3><p class="small">每週二更新一則可以查證的真實食安事件。</p>`+s.map(e=>`<article class="reading fsx">${kxNewsTop("shield",e.date,e.source)}${e.url?`<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.title)}</a>`:`<b>${esc(e.title)}</b>`}
     <dl>${[["發生什麼",e.happened],["根本原因",e.cause],["對應要求",e.req],["在我們廠怎麼擋",e.guard]].filter(x=>x[1]).map(x=>`<dt>${x[0]}</dt><dd>${esc(x[1])}</dd>`).join("")}</dl>${e.q?`<div class="rq"><b>討論：</b>${esc(e.q)}</div>`:""}</article>`).join("");
 }
 function renderKnow(){
-  const seg=[["news","每週更新"],["law","勞基法"],["tools","管理工具"]].map(([k,n])=>`<button type="button" data-k="${k}" aria-pressed="${k===kTab}">${n}</button>`).join("");
+  const seg=[["news","每週更新"],["law","勞基法"],["tools","管理工具"]].map(([k,n])=>`<button type="button" data-k="${k}" aria-pressed="${k===kTab}">${kxTab(k,n)}</button>`).join("");
   let body="";
   if (kTab==="news"){
     /* 食安事件（每週二）與推薦閱讀（一三五）：哪一區有比較新的內容，就放在上面 */
     const fsH=`${fsHTML()}`;
     const rdH=`<h3>推薦閱讀</h3><p class="small">每週一、三、五更新。摘要是重點整理，完整內容請點標題閱讀原文。</p>`+
-      D.readings.map(r=>`<article class="reading"><span class="src">${esc(r.date)} · ${esc(r.source)}</span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a><p>${esc(r.sum)}</p><div class="rq"><b>討論：</b>${esc(r.q)}</div></article>`).join("");
+      D.readings.map(r=>`<article class="reading">${kxNewsTop("list",r.date,r.source)}<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a><p>${esc(r.sum)}</p><div class="rq"><b>討論：</b>${esc(r.q)}</div></article>`).join("");
     const newest=a=>(a||[]).reduce((m,x)=>String(x.date||"")>m?String(x.date):m,"");
     body = newest(D.readings)>newest(typeof FSI!=="undefined"?FSI:[]) ? rdH+fsH : fsH+rdH;
   } else {
     const list=kTab==="law"?D.know.law:D.know.tools, S=new Set();
-    body=`<div class="kcards">${list.map(c=>`<div class="kcard"><h4>${esc(c.t)}</h4><ul>${c.i.map(x=>`<li>${gl(x,S)}</li>`).join("")}</ul></div>`).join("")}</div>`;
+    body=kxBar(list.length)+`<div class="kx-list">${list.map(c=>kxCard(c.t,`<ul>${c.i.map(x=>`<li>${gl(x,S)}</li>`).join("")}</ul>`)).join("")}</div>`;
     if (kTab==="law") body+=`<p class="small">資料日期 2026/10。速查僅供參考，請以<a href="https://law.moj.gov.tw/" target="_blank" rel="noopener">全國法規資料庫</a>最新原文與公司工作規則為準，實際處理前先和人資確認。</p>`;
   }
   return `<div class="eyebrow">三個職務共用 · 隨時查閱</div><div class="seg" role="group" aria-label="共同知識分類">${seg}</div>${body}`;
@@ -1105,6 +1138,46 @@ document.addEventListener("pointerup",e=>{
   const c=current(), n=deck(c.w,c.d).slides.length;
   if (dx<0 && slide<n-1){ slide++; render(); } else if (dx>0 && slide>0){ slide--; render(); }
 });
+/* ===== 共同知識卡片（基礎班、進階班共用；2026-10-28）=====
+   圖示比照工地屋頂招牌：白底圓徽＋石墨灰線條；關鍵數字用杏色晶片；卡片預設收合。
+   晶片內容只能取自卡片本身的文字，不另外寫結論。 */
+const KX_ICON={"list":"<rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"/><path d=\"M8 8h8M8 12h8M8 16h5\"/>","hourglass":"<path d=\"M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9s10 4 10 9\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M12 7v5l3.5 2\"/>","people":"<circle cx=\"8.5\" cy=\"8\" r=\"3\"/><circle cx=\"16\" cy=\"9\" r=\"2.5\"/><path d=\"M3 20c0-4 2.5-6 5.5-6s5.5 2 5.5 6M14 14.5c3 0 5.5 1.5 5.5 5.5\"/>","gauge":"<path d=\"M3.5 16a8.5 8.5 0 0117 0\"/><path d=\"M12 16l4-5\"/><path d=\"M6 16h.1M18 16h.1M12 8.5v.1\"/>","calendar":"<rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15\" rx=\"2\"/><path d=\"M3.5 10h17M8 3v4M16 3v4M12 13v4M10 15h4\"/>","cycle":"<path d=\"M5 12a7 7 0 0112-5l2 2M19 12a7 7 0 01-12 5l-2-2\"/><path d=\"M19 4v5h-5M5 20v-5h5\"/>","box":"<path d=\"M3 8l9-4 9 4v9l-9 4-9-4z\"/><path d=\"M3 8l9 4 9-4M12 12v9\"/>","search":"<circle cx=\"10.5\" cy=\"10.5\" r=\"6\"/><path d=\"M15 15l5.5 5.5\"/>","coin":"<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M14.5 8.5h-3.5a2 2 0 000 4h2a2 2 0 010 4H9.5M12 6.5v2M12 16.5v1.5\"/>","hazard":"<path d=\"M12 3l9.5 17h-19z\"/><path d=\"M12 10v4.5M12 17.5v.2\"/>","shield":"<path d=\"M12 3l8 3v6c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V6z\"/><path d=\"M8.5 12l2.5 2.5 4.5-5\"/>","eye":"<path d=\"M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","bell":"<path d=\"M6 16V11a6 6 0 0112 0v5l2 2H4z\"/><path d=\"M10 20a2 2 0 004 0\"/>","wrench":"<path d=\"M14.5 4a5 5 0 006 6l-9.5 9.5a2.1 2.1 0 01-3-3z\"/>","scale":"<path d=\"M12 3v18M5 21h14M4 8h16M4 8l-2.5 6a3 3 0 005 0zM20 8l-2.5 6a3 3 0 005 0z\"/>","grid":"<rect x=\"3\" y=\"3\" width=\"7.5\" height=\"7.5\" rx=\"1.5\"/><rect x=\"13.5\" y=\"3\" width=\"7.5\" height=\"7.5\" rx=\"1.5\"/><rect x=\"3\" y=\"13.5\" width=\"7.5\" height=\"7.5\" rx=\"1.5\"/><rect x=\"13.5\" y=\"13.5\" width=\"7.5\" height=\"7.5\" rx=\"1.5\"/>","chart":"<path d=\"M3 20h18M4 16l5-5 4 3 6-8\"/>","star":"<path d=\"M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z\"/>"};
+const KX_META={
+ "工時與加班":{ic:"clock",c:[["8 小時","每日正常工時"],["40 小時","每週"],["46 小時","每月加班上限"]]},
+ "特別休假":{ic:"calendar",c:[["3 日","滿半年"],["7 日","滿 1 年"],["30 日","最多"]]},
+ "輪班與休假":{ic:"cycle",c:[["11 小時","換班間隔"],["1＋1 日","每 7 日例假＋休息日"]]},
+ "懲處與工資":{ic:"scale",c:[["30 人","以上要訂工作規則"],["不得","預扣工資"]]},
+ "資遣預告期":{ic:"hourglass",c:[["10 日","3 個月–1 年"],["20 日","1–3 年"],["30 日","3 年以上"]]},
+ "職業災害":{ic:"hazard",c:[["8 小時","重大職災通報"],["第 59 條","醫療與工資補償"]]},
+ "回報四要素":{ic:"bell",c:[["4 要素","發生·影響·已做·支援"]]},
+ "情境－行為－影響（SBI）":{ic:"eye",c:[["3 步","情境·行為·影響"]]},
+ "重要／緊急四象限":{ic:"grid",c:[["4 格","重要 × 緊急"]]},
+ "5 Why":{ic:"search",c:[["連問","為什麼 → 根本原因"]]},
+ "PDCA":{ic:"cycle",c:[["4 步","計畫·執行·檢查·標準化"]]},
+ "JI 四步驟":{ic:"people",c:[["4 步","準備·示範·試做·追蹤"]]},
+ "變形工時":{ic:"clock",c:[["8 小時","每日正常工時"],["40 小時","每週"],["5 年","出勤紀錄保存"]]},
+ "加班換補休":{ic:"cycle",c:[["勞工","自己選擇補休"],["依實際","工作時數計算"]]},
+ "例假與休息日出勤":{ic:"calendar",c:[["1＋1 日","每 7 天例假＋休息日"],["24 小時","內報主管機關核備"]]},
+ "母性保護":{ic:"people",c:[["8 星期","分娩前後產假"],["2 次 × 30 分","每天哺乳時間"]]},
+ "工作規則與懲處程序":{ic:"scale",c:[["30 人","以上要訂工作規則"],["違反法令","強制或禁止規定無效"]]}
+};
+/* 進階班工具卡沒有逐張寫晶片：圖示依名稱關鍵字，晶片＝重點數與教過的週次 */
+const KX_KW=[[/庫存|訂購|交接|即期/,"box"],[/成本|毛利|損益|貢獻|差異/,"coin"],[/排程|產能|瓶頸|換線|鼓|OEE|準交/,"gauge"],[/危害|詐欺|工安|危機|交叉接觸/,"hazard"],[/稽核|抽樣|監測|管制圖|驗證|標示|點檢|影響範圍/,"search"],[/預測|報表|指標|缺口|計算|估算|健康度|準交/,"chart"],[/回報|客訴|回饋|對話|會議|三問|提案/,"bell"],[/人力|新人|授權|傳承|衝突|推動|發展|目標|做不到|職權|專案/,"people"],[/5S|作業標準/,"wrench"],[/為什麼/,"search"],[/變更|插單|原則|資訊不足/,"scale"]];
+function kxTab(k,t){ return `<span class="kx-tab">${kxIcon({news:"list",law:"scale",tools:"wrench"}[k])}${t}</span>`; }
+function kxIcon(k){ return `<svg viewBox="0 0 24 24" aria-hidden="true">${KX_ICON[k]||KX_ICON.star}</svg>`; }
+function kxGuess(t){ for(const [re,k] of KX_KW) if(re.test(t)) return k; return "star"; }
+function kxChips(c){ return c&&c.length?`<span class="kx-chips">${c.map(([a,b])=>`<span class="kx-chip"><strong>${esc(a)}</strong><small>${esc(b)}</small></span>`).join("")}</span>`:""; }
+/* t 標題、body 展開內容（已組好的 HTML）、opt.ic／opt.c 可覆蓋、opt.tag 標題右側小字 */
+function kxCard(t,body,opt){ opt=opt||{}; const m=KX_META[t]||{};
+  const ic=opt.ic||m.ic||kxGuess(t), c=opt.c||m.c;
+  return `<details class="kx"><summary><span class="kx-ic">${kxIcon(ic)}</span><span class="kx-hd"><b>${esc(t)}${opt.tag?`<em>${esc(opt.tag)}</em>`:""}</b>${kxChips(c)}</span><svg class="kx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><div class="kx-body">${body}</div></details>`; }
+function kxBar(n){ return `<div class="kx-bar"><span>${n} 張卡 · 點卡片看完整內容</span><button type="button" class="kx-all" data-kx="all">全部展開</button></div>`; }
+/* 時事卡上方：圓徽＋蓋章日期＋來源 */
+function kxNewsTop(ic,date,src){ return `<div class="kx-ntop"><span class="kx-ic sm">${kxIcon(ic)}</span>${date?`<span class="kx-stamp">${esc(date)}</span>`:""}${src?`<span class="kx-src">${esc(src)}</span>`:""}</div>`; }
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-kx=all]"); if(!b) return;
+  const box=b.closest(".kx-bar").parentElement, ds=[...box.querySelectorAll("details.kx")], open=!ds.every(d=>d.open);
+  ds.forEach(d=>d.open=open); b.textContent=open?"全部收合":"全部展開"; });
+
 /* ==========================================================
    雪坊幹部學堂：本週工地（2.5D 微縮工廠）
    build_full.py 會把這個檔案插進 v5_body.html 的主程式裡，
