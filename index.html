@@ -554,6 +554,32 @@ html.is-lock body{overflow:hidden}
 /* 小螢幕（375×667 等）完成畫面：圖縮小、按鈕固定在卡片底部，不用往下捲 */
 .celebrate:has(.is-cel) .nav2{position:sticky;bottom:-14px;background:var(--surface);padding:8px 0 10px;margin-top:auto;width:100%;justify-content:center}
 @media (max-height:760px){.is-cel svg{max-height:24vh}.celebrate:has(.is-cel) h2{font-size:1.2rem}.celebrate:has(.is-cel) .cheer{font-size:.95rem}}
+/* 四週完工動畫（2026-10-30，基礎班與進階班共用） */
+#isle-mile{position:fixed;inset:0;z-index:150;display:grid;place-items:center;overflow-y:auto;background:radial-gradient(circle at 50% 40%,rgba(255,236,190,.55),rgba(16,24,32,.8));padding:16px;animation:ml-in .35s ease-out both}
+#isle-mile[hidden]{display:none!important}
+@keyframes ml-in{from{opacity:0}to{opacity:1}}
+.ml-box{width:min(440px,100%);background:var(--surface);color:var(--ink);border-radius:22px;padding:16px 14px 14px;display:grid;gap:8px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.ml-box svg{width:100%;height:auto;display:block;border-radius:14px}
+.ml-eye{font-size:.78rem;letter-spacing:.1em;color:var(--accent);font-weight:700}
+.ml-lab{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:.72rem;line-height:1.35;color:var(--muted);animation:ml-up .5s ease-out 2s both}
+.ml-lab b{display:block;font-size:.8rem;letter-spacing:-.5px}
+.ml-lab.wide{grid-template-columns:1fr}
+.ml-t{font:700 1.3rem var(--f-display,inherit);margin:0;animation:ml-up .5s ease-out 2.3s both}
+.ml-s{margin:0;font-size:.88rem;color:var(--muted);animation:ml-up .5s ease-out 2.6s both}
+.ml-next{background:var(--accent-soft);border-radius:12px;padding:8px 10px;font-size:.84rem;line-height:1.6;text-align:left;animation:ml-up .5s ease-out 2.9s both}
+.ml-go{border:0;background:var(--accent);color:var(--on-accent,#fff);font:700 1rem var(--f-body,inherit);border-radius:14px;padding:12px;min-height:44px;cursor:pointer;animation:ml-up .4s ease-out 3.1s both}
+.ml-go:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@keyframes ml-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ml-pop{transform-box:fill-box;transform-origin:50% 100%;animation:ml-pop .7s cubic-bezier(.2,1.45,.4,1) both}
+@keyframes ml-pop{0%{transform:scale(.2,.05);opacity:0}60%{opacity:1}100%{transform:none;opacity:1}}
+.ml-dust circle{transform-box:fill-box;transform-origin:center;animation:ml-dust .8s ease-out both}
+@keyframes ml-dust{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(1.6)}}
+.ml-flag{animation:ml-up .4s ease-out 2s both}
+.ml-zoom{animation:ml-zoom 1.6s cubic-bezier(.2,1.1,.4,1) .2s both}
+@keyframes ml-zoom{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#isle-mile,.ml-lab,.ml-t,.ml-s,.ml-next,.ml-go,.ml-pop,.ml-dust circle,.ml-flag,.ml-zoom{animation:none}.ml-dust{display:none}}
+.is-ms>button{font:inherit;border:1px solid var(--accent);background:var(--accent-soft);border-radius:12px;padding:6px 4px;text-align:center;font-size:.72rem;color:var(--muted);line-height:1.35;cursor:pointer;min-height:44px}
+.is-ms>button b{display:block;font-size:.78rem;color:var(--ink)}
 /* ===== 共同知識卡片（基礎班、進階班共用）===== */
 :root{--kx-apricot:#E9893F;--kx-apricot-soft:#FDEBD9;--kx-apricot-ink:#9A4F12}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--kx-apricot:#F2A866;--kx-apricot-soft:#3A2A1C;--kx-apricot-ink:#F7C99B}}
@@ -1186,7 +1212,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closes
    build_full.py 會把這個檔案插進 v5_body.html 的主程式裡，
    直接讀現有的進度（done、quiz、weekDone、weekTier），不改任何既有 key。
    新增的紀錄：xf5-isleDay（今天看過首頁）、xf5-isleTrees（稽查員送的樹）、
-   xf5-isleInsp（本週稽查員）、xf5-isleEv（停電事件）。
+   xf5-isleInsp（本週稽查員）、xf5-isleEv（停電事件）、xf5-isleMile（已播過的四週完工動畫，以職務分開）。
    ========================================================== */
 (function(){
 const ISLE_ROLES=["prod","qa","line"];
@@ -1605,6 +1631,35 @@ function areaSVG(){
   return `<svg viewBox="-20 -6 400 250" role="img" aria-label="${RN[role]}的雪坊園區">${s}</svg>`;
 }
 
+/* ---------- 四週完工動畫（2026-10-30）：第 4、8、12、16 週那一段全部完工時播一次，看全區可以重看 ---------- */
+const ML_NUM=["一","二","三","四"], ML_TT=["恭喜完成四週課程！","恭喜完成八週課程！","恭喜完成十二週課程！","恭喜完成全部 16 週課程！"];
+function mileOk(b){ for(let x=b*4-3;x<=b*4;x++) if(stageOf(role,x)<5) return false; return true; }
+function mileDue(w){ const b=Math.ceil(w/4); if(b<1||b>4||!mileOk(b)) return 0; const s=byRole("isleMile")[role]||[]; if(s.includes(b)) return 0; s.push(b); saveRole("isleMile",s); return b; }
+function mileRowSVG(b){
+  PR={cx:70,cy:40,a:56,b:28};
+  let s=DEFS+`<rect x="-60" y="-60" width="520" height="420" fill="url(#is-sky)"/>`;
+  s+=box(-.08,-.1,4.16,1.2,.14,"var(--is-rock)",-.15,{top:"var(--is-grass)"});
+  for(let i=0;i<4;i++){ const w=b*4-3+i, save=PR; PR={...PR,cx:PR.cx+i*PR.a,cy:PR.cy+i*PR.b};
+    s+=box(.04,.04,.92,.92,.02,"var(--is-soil-dk)",0,{top:"var(--is-grass-hi)"});
+    const bl=building(role,w,5,{tier:tierOf(role,w),lite:true}).replace(/class="is-(walk|hop|blink|fan|steam|sway)[^"]*"/g,'');
+    const c=P(.5,.5,.05), d=(.25+i*.42).toFixed(2), k=K();
+    s+=`<g class="ml-dust">${[[-26,4],[24,8],[0,-6]].map(([x,y])=>`<circle cx="${f1(c[0]+x*k)}" cy="${f1(c[1]+y*k)}" r="${f1(9*k)}" fill="#F3F1EC" style="animation-delay:${d}s"/>`).join("")}</g>`;
+    s+=`<g class="ml-pop" style="animation-delay:${d}s"><g transform="translate(0,${f1(-.03*PR.a)})">${bl}</g></g>`; PR=save; }
+  const fp=P(4.05,.95,0);
+  s+=`<g class="ml-flag" transform="translate(${f1(fp[0])},${f1(fp[1])})"><path d="M0 0 v-44" stroke="#7D8792" stroke-width="2"/><path d="M0 -44 h42 l-6 8 l6 8 h-42z" fill="#F0C33C"/><text x="19" y="-33" text-anchor="middle" font-size="8.5" font-weight="700" fill="#5A4416" font-family="var(--f-body)">W${b*4-3}–W${b*4}</text></g>`;
+  return `<svg viewBox="6 -26 300 226" role="img" aria-label="第 ${b*4-3} 到 ${b*4} 週的四棟建築依序完工">${s}</svg>`; }
+function mileOpen(b){
+  let el=document.getElementById("isle-mile");
+  if(!el){ el=document.createElement("div"); el.id="isle-mile"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true"); el.setAttribute("aria-labelledby","ml-t"); document.body.appendChild(el); }
+  const ws=[0,1,2,3].map(i=>b*4-3+i), fin=b===4;
+  const labels=fin?`<div class="ml-lab wide"><span>${RN[role]} · 16 棟全部落成 · 稽查員送的樹 ${trees} 棵</span></div>`
+    :`<div class="ml-lab">${ws.map(w=>{ const t=TIER[tierOf(role,w)||"bronze"]; return `<span><b style="color:${t.e}">● ${t.n}</b>${esc(ISLE_B[role][w-1].n)}</span>`; }).join("")}</div>`;
+  const next=fin?"雪坊大門落成，整座園區完工。打開「看全區」可以看到所有建築。":`看全區解鎖了新設施：<b>${MILE[b-1].n}</b>。錯題回顧看完、測驗題第一次全對，獎章還能升級成銀牌、金牌。`;
+  el.innerHTML=`<div class="ml-box"><span class="ml-eye">${RN[role]} · ${fin?"結業 · W1–W16":`第${ML_NUM[b-1]}階段 · W${ws[0]}–W${ws[3]}`}</span>${fin?`<div class="ml-zoom">${areaSVG()}</div>`:mileRowSVG(b)}${labels}<h2 class="ml-t" id="ml-t">${ML_TT[b-1]}</h2><p class="ml-s">${fin?"一整座雪坊園區，都是你一關一關蓋起來的。":"四棟建築全部落成，園區開始有樣子了。"}</p><div class="ml-next">${next}</div><button type="button" class="ml-go" data-isle="mileok">太好了，繼續</button></div>`;
+  el.hidden=false; document.documentElement.classList.add("is-lock");
+  setTimeout(()=>{ const g=el.querySelector(".ml-go"); if(g&&!el.hidden) g.focus({preventScroll:true}); },3200); }
+function mileClose(){ const el=document.getElementById("isle-mile"); if(el) el.hidden=true; if(!isleOpenNow) document.documentElement.classList.remove("is-lock"); }
+
 /* ---------- 對外：給主程式呼叫 ---------- */
 function stepsHTML(st){ return `<div class="is-steps">${STG.map(([a,b],i)=>`<div class="${i<st?"on":i===st?"now":""}"><i>${i<st?"✓":i+1}</i><span>${a}<br>${b}</span></div>`).join("")}</div>`; }
 function alertsHTML(){ const ev=evState(), ins=inspState(); let s="";
@@ -1618,12 +1673,12 @@ function panelHTML(){
   let body;
   if(isleView==="area"){ let nf=0; for(let x=1;x<=WEEKS;x++) if(stageOf(role,x)===5) nf++;
     body=`<div class="is-view">${areaSVG()}</div><p class="is-tap">${RN[role]} · 已蓋好 ${nf} / 16 棟 · 稽查員送的樹 ${trees} 棵</p>
-      <div class="is-ms">${MILE.map(m=>{ let ok=true; for(let x=1;x<=m.w;x++) if(stageOf(role,x)<5) ok=false; return `<div class="${ok?"on":""}"><b>${m.n}</b>${ok?"已解鎖":`第 ${m.w} 週解鎖`}</div>`; }).join("")}</div>`; }
+      <div class="is-ms">${MILE.map(m=>{ let ok=true; for(let x=1;x<=m.w;x++) if(stageOf(role,x)<5) ok=false; return ok?`<button type="button" data-isle="mile" data-b="${m.w/4}" aria-label="${m.n}已解鎖，重看第 ${m.w-3} 到 ${m.w} 週完工動畫"><b>${m.n}</b>重看動畫 ▶</button>`:`<div><b>${m.n}</b>第 ${m.w} 週解鎖</div>`; }).join("")}</div>`; }
   else body=`<div class="is-view">${siteSVG(w)}</div>${stepsHTML(st)}<p class="is-tap">${st>=3?"點建築，看這週的一句話帶走":"每完成一關，工地就往前一個階段"}</p>`;
   const nu=(typeof nextUnfinished==="function")?nextUnfinished():null;
   return `<div class="is-head"><div class="t"><span class="is-eye">${RN[role]} · 第 ${w} 週 · ${st}/5 關</span><b>${esc(spec.n)}</b></div><button type="button" class="is-x" data-isle="close" aria-label="關閉小島">✕</button></div>
     ${tabs}${alertsHTML()}${body}
-    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1028-10</p>`;
+    <button type="button" class="is-go" data-isle="start"><b>${nu?"開始今天的課":"全部完成了"}</b><span>${nu?(nu.w===0?"先認識你的職務":`第 ${nu.w} 週 · ${STEPN[nu.d]}`):"可以回頭複習任何一週"}</span></button><p class="is-ver">小島版本 1030-1</p>`;
 }
 function ensureHost(){ let h=document.getElementById("isle"); if(!h){ h=document.createElement("div"); h.id="isle"; h.hidden=true; h.innerHTML=`<div class="is-panel" role="dialog" aria-modal="true" aria-label="我的小島" id="isle-panel"></div>`; document.body.appendChild(h); }
   return h; }
@@ -1669,6 +1724,7 @@ window.isleStripHTML=window.isleThumbHTML;
 window.isleCelHTML=function(w,d,conf){
   if(!w || !STORE_OK) return `<div class="confetti">${conf}</div><div class="big">✓</div>`;
   markSeen();
+  const mb=stageOf(role,w)===5?mileDue(w):0; if(mb) setTimeout(()=>mileOpen(mb),2600);
   const st=stageOf(role,w); PR={cx:180,cy:128,a:150,b:75}; const c=P(.5,.5,.32);
   /* 小芽一句話週報：整週完工時，小芽說這週的「一句話帶走」 */
   const tk=st===5?takeOf(role,w):"";
@@ -1695,6 +1751,8 @@ document.addEventListener("click",e=>{
   if(act==="open"){ openIsle("site"); return; }
   if(act==="openarea"){ openIsle("area"); return; }
   if(act==="close"){ closeIsle(); return; }
+  if(act==="mile"){ mileOpen(+a.dataset.b); return; }
+  if(act==="mileok"){ mileClose(); return; }
   if(act==="vsite"||act==="varea"){ isleView=act==="vsite"?"site":"area"; refresh(); return; }
   if(act==="start"){ closeIsle(); const n=nextUnfinished(); tab="today"; review=null; if(n){ go(n.w,n.d); } else { viewing=null; slide=0; celebrate=false; render(); } return; }
   if(act==="take"){ const r=a.dataset.r, w=+a.dataset.w, t=takeOf(r,w); if(stageOf(r,w)<3) return;
@@ -1717,9 +1775,9 @@ document.addEventListener("click",e=>{
 document.addEventListener("keydown",e=>{
   const t=e.target.closest&&e.target.closest('[data-isle][role="button"]');
   if((e.key==="Enter"||e.key===" ") && t){ e.preventDefault(); t.dispatchEvent(new MouseEvent("click",{bubbles:true})); }
-  if(e.key==="Escape"){ if(qMode) qClose(); else if(isleOpenNow) closeIsle(); }
+  if(e.key==="Escape"){ const ml=document.getElementById("isle-mile"); if(ml&&!ml.hidden){ mileClose(); return; } if(qMode) qClose(); else if(isleOpenNow) closeIsle(); }
 });
-window.__isleTest={ctxOf,qBlocks,building,siteSVG,areaSVG,stageOf,ISLE_B,setPR:p=>{PR=p;},DEFS,evState,inspState};
+window.__isleTest={mileOpen,mileRowSVG,ctxOf,qBlocks,building,siteSVG,areaSVG,stageOf,ISLE_B,setPR:p=>{PR=p;},DEFS,evState,inspState};
 })();
 
 window.addEventListener("resize",fitDeck);
