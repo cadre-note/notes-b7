@@ -420,6 +420,18 @@ ol.toc span{font-family:var(--f-mono);color:var(--accent);min-width:2.4em}
 .nextm .nm2 svg{width:64px;height:auto;display:block}
 .thm{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:2px 8px;font:500 .8rem var(--f-body);cursor:pointer;margin-right:4px}
 .hdtools{display:flex;align-items:center;gap:4px;margin-left:auto}
+
+/* 銅牌提示（2026-11-02） */
+.mbtn{font:inherit;color:inherit;background:none;border:1.5px dashed transparent;border-radius:12px;padding:4px 2px;cursor:pointer}
+.mbtn:hover,.mbtn.on{border-color:var(--accent);background:var(--accent-soft)}
+.mbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mhint{margin:8px 0 0;text-align:center}
+.mtip{margin-top:10px;border:1px solid var(--line);border-left:4px solid #C98A55;border-radius:12px;padding:10px 12px;background:var(--surface)}
+.mtip b{font-size:.92rem}.mtip p{margin:4px 0 6px}
+.mtip ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.mtip li{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.86rem;line-height:1.4}
+.mtip li .btn{flex:none;min-height:40px;padding:6px 14px}
+.revmiss{border-color:#C98A55;color:#9A6232}
 /* ===== 本週工地（小島）：色票跟著學堂的深淺色 ===== */
 :root{--is-prod:#3B5BDB;--is-qa:#1E8A5A;--is-line:#D2602A;--is-sky-a:#CBE8F3;--is-sky-b:#9FD0E4;
   --is-grass:#B3DA90;--is-grass-hi:#C3E3A3;--is-soil:#D2B489;--is-soil-dk:#A88658;--is-soil-ink:#5A472F;--is-rock:#A2876A;--is-road:#E6D9BA;
@@ -663,7 +675,7 @@ let role = store.get("role","prod");
 let tab = "today", flowKey = "chain", kTab = "news";
 let ptab = null;
 let viewing = null, slide = 0, celebrate = false;
-let done = store.get("done",{}), notes = store.get("notes",{}), quiz = store.get("quiz",{}), flips = store.get("flips",{}), orders = store.get("orders",{});
+let done = store.get("done",{}), notes = store.get("notes",{}), quiz = store.get("quiz",{}), flips = store.get("flips",{}), orders = store.get("orders",{}), ordOk = store.get("ordOk",{}), ordDraft = {}, mtipW = null;
 let fs = store.get("fs",1);
 let thm = store.get("thm",null);
 const THM={light:["淺色","M12 7a5 5 0 1 0 0 10a5 5 0 1 0 0-10z M12 1v2 M12 21v2 M4.2 4.2l1.4 1.4 M18.4 18.4l1.4 1.4 M1 12h2 M21 12h2 M4.2 19.8l1.4-1.4 M18.4 5.6l1.4-1.4"],dark:["深色","M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"]};
@@ -744,10 +756,10 @@ function shuf(k,n){ let h=7; for(const ch of k) h=(h*131+ch.charCodeAt(0))%21474
   for(let i=n-1;i>0;i--){ h=(h*48271)%2147483647; const j=h%(i+1); [a[i],a[j]]=[a[j],a[i]]; }
   if(a.every((v,i)=>v===i)) a.reverse(); return a; }
 function orderHTML(b,S){
-  const pick=orders[b.key]||[], n=b.i.length;
+  const pick=ordDraft[b.key]||orders[b.key]||[], n=b.i.length;
   let h=`<div class="order"><span class="tag">排出順序</span><h3 class="plain">${esc(b.t)}</h3>${b.s?`<p class="ord-lead">${esc(b.s)}</p>`:""}`;
   if (pick.length<n){
-    h+=`<p class="small">依序點選下面的步驟（已選 ${pick.length}／${n}）。</p>`;
+    h+=`<p class="small">依序點選下面的步驟（已選 ${pick.length}／${n}）。${ordDraft[b.key]?"重排中：排完才會取代原本的答案，中途離開不影響獎章。":""}</p>`;
     if (pick.length) h+=`<ol class="ord-picked">${pick.map(i=>`<li>${esc(b.i[i])}</li>`).join("")}</ol>`;
     h+=`<div class="ord-opts">${shuf(b.key,n).filter(i=>!pick.includes(i)).map(i=>`<button type="button" class="opt" data-act="ord" data-key="${b.key}" data-i="${i}"><span>${esc(b.i[i])}</span></button>`).join("")}</div>`;
     if (pick.length) h+=`<button type="button" class="btn ghost" data-act="ordreset" data-key="${b.key}">重來</button>`;
@@ -859,13 +871,30 @@ function deck(w,d){
 }
 
 /* ---------- 每週錯題回顧 ---------- */
+/* 排序題（2026-11-02）：排對過一次就算對（xf5-ordOk）；重排時新順序先暫存，排完 6 步才取代舊答案 */
+function ordFull(b){ const p=orders[b.key]||[]; return p.length===b.i.length; }
+function ordRight(b){ if(ordOk[b.key]) return true; const p=orders[b.key]||[]; return p.length===b.i.length && p.every((v,i)=>v===i); }
+function ordAnswered(b){ return ordFull(b) || !!ordOk[b.key]; }
+function findOrd(k){ for(const key in D.lessons) for(const sl of D.lessons[key]) for(const b of sl){ if(b.k==="order"&&b.key===k) return b; } return null; }
+/* 還沒作答的題目（銅牌提示、錯題回顧用）：{d,s,b,kind,pick,n} */
+function weekMissing(w){
+  const out=[];
+  for (let d=0; d<5; d++){
+    const key = d<3 ? `${role}-${w}-${d}` : d===3 ? `T-${w}` : `C-${w}`, L=D.lessons[key]; if(!L) continue;
+    L.forEach((sl,s)=>sl.forEach(function walk(b){ if(b.k==="byrole") (b.r[role]||[]).forEach(walk);
+      else if(b.k==="quiz" && quiz[b.key]===undefined) out.push({d,s,b,kind:"選擇題"});
+      else if(b.k==="order" && !ordAnswered(b)) out.push({d,s,b,kind:"排序題",pick:(ordDraft[b.key]||orders[b.key]||[]).length,n:b.i.length}); }));
+  }
+  return out;
+}
+function missLabel(m){ return `${m.d<3?`第 ${m.d+1} 關`:m.d===3?"共同課":"週五案例"} · 卡 ${m.s+1} ${m.kind}${m.kind==="排序題"?`（已選 ${m.pick}／${m.n}）`:""}`; }
 function weekWrong(w){
   const out=[];
   for (let d=0; d<5; d++){
     const key = d<3 ? `${role}-${w}-${d}` : d===3 ? `T-${w}` : `C-${w}`, L=D.lessons[key]; if(!L) continue;
     const walk=b=>{ if(b.k==="byrole") (b.r[role]||[]).forEach(walk);
       else if(b.k==="quiz" && quiz[b.key]!==undefined && quiz[b.key]!==b.a) out.push({b,d});
-      else if(b.k==="order"){ const p=orders[b.key]||[]; if(p.length===b.i.length && p.some((v,i)=>v!==i)) out.push({b,d}); } };
+      else if(b.k==="order"){ if(ordFull(b) && !ordRight(b)) out.push({b,d}); } };
     L.forEach(sl=>sl.forEach(walk));
   }
   return out;
@@ -964,7 +993,7 @@ function weekTier(w){
     const key = d<3 ? `${role}-${w}-${d}` : d===3 ? `T-${w}` : `C-${w}`, L=D.lessons[key]; if(!L) continue;
     const walk=b=>{ if(b.k==="byrole") (b.r[role]||[]).forEach(walk);
       else if(b.k==="quiz"){ total++; if(quiz[b.key]!==undefined){ ans++; if(quiz[b.key]!==b.a) wrong++; } }
-      else if(b.k==="order"){ total++; const p=orders[b.key]||[]; if(p.length===b.i.length){ ans++; if(p.some((v,i)=>v!==i)) wrong++; } } };
+      else if(b.k==="order"){ total++; if(ordAnswered(b)){ ans++; if(!ordRight(b)) wrong++; } } };
     L.forEach(sl=>sl.forEach(walk));
   }
   if (ans<total) return "bronze";
@@ -999,7 +1028,10 @@ function renderProg(){
   const medalsN=Array.from({length:WEEKS},(_,i)=>weekDone(i+1)===5).filter(Boolean).length;
   medalUid=0; const tiers=Array.from({length:WEEKS},(_,i)=>weekTier(i+1));
   const tn={gold:0,silver:0,bronze:0}; tiers.forEach(t=>{ if(t) tn[t]++; });
-  const medals=tiers.map((t,i)=>`<div class="mcell">${medalSVG(i+1,t)}<span>${esc(D.weeks[role][i])}</span></div>`).join("");
+  const medals=tiers.map((t,i)=>t==="bronze"?`<button type="button" class="mcell mbtn ${mtipW===i+1?"on":""}" data-act="mtip" data-w="${i+1}" aria-expanded="${mtipW===i+1}" aria-label="第 ${i+1} 週銅牌，看怎麼升級">${medalSVG(i+1,t)}<span>${esc(D.weeks[role][i])}</span></button>`:`<div class="mcell">${medalSVG(i+1,t)}<span>${esc(D.weeks[role][i])}</span></div>`).join("");
+  const mtip=(()=>{ if(!mtipW || tiers[mtipW-1]!=="bronze") return ""; const w=mtipW, ms=weekMissing(w);
+    if(ms.length) return `<div class="mtip"><b>第 ${w} 週 · 銅牌：還有 ${ms.length} 題沒完成</b><p class="small">答完就能升級；第一次就答對（排序題排對過）是金牌。</p><ul>${ms.map(m=>`<li><span>${esc(missLabel(m))}</span><button type="button" class="btn ghost" data-act="miss" data-w="${w}">前往</button></li>`).join("")}</ul></div>`;
+    return `<div class="mtip"><b>第 ${w} 週 · 銅牌：錯題回顧還沒看</b><p class="small">題目都答完了，看完這週的錯題回顧就是銀牌。</p><button type="button" class="btn ghost" data-act="wrongs" data-w="${w}">看錯題回顧</button></div>`; })();
   const cat=Array.from({length:WEEKS},(_,i)=>{ const w=i+1, o=isOpen(w), k=weekDone(w);
     const items=[0,1,2,3,4].map(d=>{ const dn=!!done[lid(w,d)]; const nm=d<3?`${D.weeks[role][w-1]}｜${STEPN[d]}`:d===3?D.weeks.common[w-1]:"案例："+D.caseTitles[w-1];
       return `<li><button type="button" data-act="open" data-w="${w}" data-d="${d}" ${o?"":"disabled"}><span class="ck ${dn?"on":""}">${dn?"✓":""}</span><span>${esc(nm)}</span></button></li>`; }).join("");
@@ -1014,9 +1046,9 @@ function renderProg(){
   const seg=`<div class="pseg" role="tablist" aria-label="我的進度">${[["medal","獎章"],["prog","進度"],["note","筆記"]].map(([k,t])=>`<button type="button" role="tab" aria-selected="${pt===k}" data-act="ptab" data-v="${k}">${t}</button>`).join("")}</div>`;
   const firstHint = medalsN ? "" : (()=>{ let bw=1,bd=-1; for(let x=1;x<=WEEKS;x++){ const k=weekDone(x); if(k>bd&&k<5){bd=k;bw=x;} } medalUid=0;
     return `<section class="card nextm"><div class="nm2">${medalSVG(bw,null)}</div><div><h3>再完成 ${5-bd} 關，就拿到第一枚獎章</h3><p class="small">第 ${bw} 週：${esc(D.weeks[role][bw-1])}。一週 5 關都完成就是銅牌。</p></div></section>`; })();
-  const medalPart=`${medalNoteHTML()}<section class="card"><h3>週獎章 · ${medalsN} 枚</h3><p class="small">金 ${tn.gold} · 銀 ${tn.silver} · 銅 ${tn.bronze}。5 關完成是銅牌；題目都答完、錯題也看過是銀牌；第一次作答就全對是金牌。</p><div class="medals2">${medals}</div></section>`;
-  const revPart=(()=>{ const L=Array.from({length:WEEKS},(_,i)=>i+1).filter(x=>weekDone(x)===5).map(x=>[x,weekWrong(x).length]); if(!L.length) return "";
-    return `<section class="card"><h3>錯題回顧</h3><p class="small">完成一整週後，可以回來看當時答錯的題目。</p><div class="revlist">${L.map(([x,k])=>k?`<button type="button" class="btn ghost" data-act="wrongs" data-w="${x}">第 ${x} 週 · 錯 ${k} 題</button>`:`<span class="revok">第 ${x} 週 · 全對 ✓</span>`).join("")}</div></section>`; })();
+  const medalPart=`${medalNoteHTML()}<section class="card"><h3>週獎章 · ${medalsN} 枚</h3><p class="small">金 ${tn.gold} · 銀 ${tn.silver} · 銅 ${tn.bronze}。5 關完成是銅牌；題目都答完、錯題也看過是銀牌；第一次作答就全對是金牌（排序題重排排對也算）。</p><div class="medals2">${medals}</div>${tn.bronze?`<p class="small mhint">點銅牌，看還差什麼就能升級</p>`:""}${mtip}</section>`;
+  const revPart=(()=>{ const L=Array.from({length:WEEKS},(_,i)=>i+1).filter(x=>weekDone(x)===5).map(x=>[x,weekWrong(x).length,weekMissing(x).length]); if(!L.length) return "";
+    return `<section class="card"><h3>錯題回顧</h3><p class="small">完成一整週後，可以回來看當時答錯的題目。</p><div class="revlist">${L.map(([x,k,m])=>`${k?`<button type="button" class="btn ghost" data-act="wrongs" data-w="${x}">第 ${x} 週 · 錯 ${k} 題</button>`:""}${m?`<button type="button" class="btn ghost revmiss" data-act="miss" data-w="${x}">第 ${x} 週 · ${m} 題未完成</button>`:""}${!k&&!m?`<span class="revok">第 ${x} 週 · 全對 ✓</span>`:""}`).join("")}</div></section>`; })();
   const notePart=`<section class="card"><h3>我的筆記</h3><div class="notes">${nlist}</div></section>`;
   const progPart=`${firstHint}${isleAreaCard(n,total)||ringHTML}${revPart}
   <section class="card"><h3>完整目錄</h3><p class="small">所有週次都可以點開。標日期的週次是建議閱讀時間，想先看也沒問題。</p><div class="cat">${cat}</div></section>
@@ -1150,8 +1182,18 @@ document.addEventListener("click",e=>{
     try{ navigator.clipboard.writeText(c).then(ok,fb); }catch(e){ fb(); } }
   else if (act==="bkload"){ const v=document.getElementById("bk-in")?.value, n=restoreCode(v), m=document.getElementById("bk-msg");
     if(n<0){ if(m) m.textContent="進度碼格式不對，請確認是完整複製的（XF1- 開頭）。"; } else { render(true); const m2=document.getElementById("bk-msg"); if(m2) m2.textContent=n?`已還原 ${n} 關。`:"這個進度碼的關卡你都已經完成了。"; } }
-  else if (act==="ord"){ const k=a.dataset.key; orders[k]=[...(orders[k]||[]),+a.dataset.i]; store.set("orders",orders); render(true); }
-  else if (act==="ordreset"){ delete orders[a.dataset.key]; store.set("orders",orders); render(true); }
+  else if (act==="ord"){ const k=a.dataset.key, b=findOrd(k), n=b?b.i.length:0;
+    if (ordDraft[k]){ ordDraft[k]=[...ordDraft[k],+a.dataset.i]; if(ordDraft[k].length===n){ orders[k]=ordDraft[k]; delete ordDraft[k]; store.set("orders",orders); } }
+    else { orders[k]=[...(orders[k]||[]),+a.dataset.i]; store.set("orders",orders); }
+    const p=orders[k]||[]; if(p.length===n && p.every((v,i)=>v===i) && !ordOk[k]){ ordOk[k]=1; store.set("ordOk",ordOk); }
+    render(true); }
+  else if (act==="ordreset"){ const k=a.dataset.key, b=findOrd(k);
+    if (b && (orders[k]||[]).length===b.i.length) ordDraft[k]=[];   /* 已排完：新順序先暫存，舊答案保留到排完為止 */
+    else if (ordDraft[k]) ordDraft[k]=[];
+    else { delete orders[k]; store.set("orders",orders); }
+    render(true); }
+  else if (act==="mtip"){ const w=+a.dataset.w; mtipW = mtipW===w ? null : w; render(true); }
+  else if (act==="miss"){ const w=+a.dataset.w, m=weekMissing(w)[0]; mtipW=null; if(m){ go(w,m.d); slide=m.s; render(); window.scrollTo(0,0); } }
   else if (act==="flip"){ flips[a.dataset.key]=!flips[a.dataset.key]; store.set("flips",flips); render(true); }
 });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") document.getElementById("sheet").hidden=true; if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches('div[role="button"][data-act]')){ e.preventDefault(); e.target.click(); } });
