@@ -1,5 +1,16 @@
 [
  {
+  "date": "2026-11-03",
+  "title": "一座丹麥廠的布丁可能含玻璃,至少五國跟著回收",
+  "source": "Dairy Reporter",
+  "url": "https://www.dairyreporter.com/Article/2026/10/26/arla-pulls-protein-puddings-over-potential-glass-contamination/",
+  "happened": "10/23 Arla 預防性回收丹麥 Esbjerg 廠蛋白布丁部分批次,可能含細小玻璃碎片;英、西、澳、紐、沙國陸續下架。",
+  "cause": "來源未說明玻璃從哪來、怎麼被發現;Arla 只說含玻璃機率極為有限,回收範圍靠批號與效期圈定。",
+  "req": "ISO 22000 8.9.5 要求能撤回/回收不安全產品並定期測試有效性;前提方案要求管控玻璃與易碎物。",
+  "guard": "盤點線上玻璃與硬塑膠(燈罩、視窗、儀表面板)列清冊定期點檢;破損時隔離前後批次,用批號追到原料與出貨對象。",
+  "q": "下次回收演練,從一個成品批號算起,多久能列出原料批號與客戶?"
+ },
+ {
   "date": "2026-10-27",
   "title": "消費者吃到金屬片：美國冰淇淋兩口味約兩萬盒回收",
   "source": "Food Safety News",
