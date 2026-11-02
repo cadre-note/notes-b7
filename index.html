@@ -1030,7 +1030,7 @@ function renderProg(){
   const tn={gold:0,silver:0,bronze:0}; tiers.forEach(t=>{ if(t) tn[t]++; });
   const medals=tiers.map((t,i)=>t==="bronze"?`<button type="button" class="mcell mbtn ${mtipW===i+1?"on":""}" data-act="mtip" data-w="${i+1}" aria-expanded="${mtipW===i+1}" aria-label="第 ${i+1} 週銅牌，看怎麼升級">${medalSVG(i+1,t)}<span>${esc(D.weeks[role][i])}</span></button>`:`<div class="mcell">${medalSVG(i+1,t)}<span>${esc(D.weeks[role][i])}</span></div>`).join("");
   const mtip=(()=>{ if(!mtipW || tiers[mtipW-1]!=="bronze") return ""; const w=mtipW, ms=weekMissing(w);
-    if(ms.length) return `<div class="mtip"><b>第 ${w} 週 · 銅牌：還有 ${ms.length} 題沒完成</b><p class="small">答完就能升級；第一次就答對（排序題排對過）是金牌。</p><ul>${ms.map(m=>`<li><span>${esc(missLabel(m))}</span><button type="button" class="btn ghost" data-act="miss" data-w="${w}">前往</button></li>`).join("")}</ul></div>`;
+    if(ms.length) return `<div class="mtip"><b>第 ${w} 週 · 銅牌：還有 ${ms.length} 題沒完成</b><p class="small">答完就能升級；第一次就答對（排序題排對過）是金牌。</p><ul>${ms.map(m=>`<li><span>${esc(missLabel(m))}</span><button type="button" class="btn ghost" data-act="miss" data-w="${w}" data-j="${ms.indexOf(m)}">前往</button></li>`).join("")}</ul></div>`;
     return `<div class="mtip"><b>第 ${w} 週 · 銅牌：錯題回顧還沒看</b><p class="small">題目都答完了，看完這週的錯題回顧就是銀牌。</p><button type="button" class="btn ghost" data-act="wrongs" data-w="${w}">看錯題回顧</button></div>`; })();
   const cat=Array.from({length:WEEKS},(_,i)=>{ const w=i+1, o=isOpen(w), k=weekDone(w);
     const items=[0,1,2,3,4].map(d=>{ const dn=!!done[lid(w,d)]; const nm=d<3?`${D.weeks[role][w-1]}｜${STEPN[d]}`:d===3?D.weeks.common[w-1]:"案例："+D.caseTitles[w-1];
@@ -1193,7 +1193,7 @@ document.addEventListener("click",e=>{
     else { delete orders[k]; store.set("orders",orders); }
     render(true); }
   else if (act==="mtip"){ const w=+a.dataset.w; mtipW = mtipW===w ? null : w; render(true); }
-  else if (act==="miss"){ const w=+a.dataset.w, m=weekMissing(w)[0]; mtipW=null; if(m){ go(w,m.d); slide=m.s; render(); window.scrollTo(0,0); } }
+  else if (act==="miss"){ const w=+a.dataset.w, m=weekMissing(w)[+a.dataset.j||0]; mtipW=null; if(m){ go(w,m.d); slide=m.s; render(); window.scrollTo(0,0); } }
   else if (act==="flip"){ flips[a.dataset.key]=!flips[a.dataset.key]; store.set("flips",flips); render(true); }
 });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") document.getElementById("sheet").hidden=true; if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches('div[role="button"][data-act]')){ e.preventDefault(); e.target.click(); } });
