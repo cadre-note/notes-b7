@@ -1811,7 +1811,9 @@ document.addEventListener("click",e=>{
     if(navigator.clipboard) navigator.clipboard.writeText(txt).then(ok,ok); else ok(); }
   else if (act==="hmprog"){ tab="prog"; render(); window.scrollTo(0,0); }
   else if (act==="gomtip"){ tab="prog"; ptab="medal"; mtipW=+a.dataset.w; render(); window.scrollTo(0,0); }
-  else if (act==="gonews"){ if(typeof nsMarkSeen==="function") nsMarkSeen(); tab="know"; kTab="news"; review=null; render(); window.scrollTo(0,0); }
+  else if (act==="gonews"){ if(typeof nsMarkSeen==="function") nsMarkSeen(); tab="know"; kTab="news"; review=null; render(); window.scrollTo(0,0);
+    /* 2026-11-05：從首頁新知橫幅進來，直接打開那則的全文抽屜（橫幅顯示食安就開食安，沒有食安才開推薦閱讀） */
+    const {fs,rd}=mcNewsData(); const t=fs.length?"f":rd.length?"r":""; if(t) mcOpen(mcNewsSheet(t,0)); }
   else if (act==="mtip"){ const w=+a.dataset.w; mtipW = mtipW===w ? null : w; render(true); }
   else if (act==="miss"){ const w=+a.dataset.w, m=weekMissing(w)[+a.dataset.j||0]; mtipW=null; if(m){ go(w,m.d); slide=m.s; render(); window.scrollTo(0,0); } }
   else if (act==="flip"){ flips[a.dataset.key]=!flips[a.dataset.key]; store.set("flips",flips); render(true); }
