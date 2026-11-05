@@ -432,6 +432,83 @@ ol.toc span{font-family:var(--f-mono);color:var(--accent);min-width:2.4em}
 .mtip li{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.86rem;line-height:1.4}
 .mtip li .btn{flex:none;min-height:40px;padding:6px 14px}
 .revmiss{border-color:#C98A55;color:#9A6232}
+
+/* ===== 今日關卡首頁（2026-11-05 改版）=====
+   結構固定、顏色跟著職務：主色＝--accent、淡色底＝--accent-soft、深色橫幅＝--hm-banner、點綴＝--hm-hi（檸檬黃）。
+   人物圖固定每職務一位（img/qa|prod|line.webp），去背 webp。 */
+:root{--hm-banner:#1C2A63;--hm-hi:#F2C94C;--hm-hi-ink:#2A2410;--hm-shadow:0 2px 10px rgba(23,33,43,.07)}
+:root[data-role="qa"]{--hm-banner:#123F2B}
+:root[data-role="line"]{--hm-banner:#4E2412}
+:root[data-theme="dark"]{--hm-shadow:none}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--hm-shadow:none} }
+.hm{display:grid;gap:14px;padding-top:4px}
+.hm-s{font-size:.78rem;color:var(--muted)}
+.hm-s.c{text-align:center;display:block}
+.hm-k{font-size:.75rem;font-weight:700;color:var(--accent-deep)}
+.hm-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.hm-lnk{border:0;background:transparent;color:var(--muted);font:500 .8rem var(--f-body);padding:6px 2px;cursor:pointer}
+.hm-lnk.c{display:block;margin:0 auto;color:var(--accent-deep);font-weight:700}
+.hm-id{display:flex;align-items:center;gap:10px;width:100%;border:0;cursor:pointer;background:var(--surface);color:var(--ink);border-radius:18px;padding:12px 14px;box-shadow:var(--hm-shadow);font:inherit;text-align:left}
+.hm-tag{flex:none;font-size:.72rem;font-weight:700;color:var(--accent-deep);background:var(--accent-soft);border-radius:99px;padding:2px 9px}
+.hm-wk{flex:none;font-weight:700;font-size:.9rem}
+.hm-bar{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.hm-bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.hm-n{flex:none;font-size:.78rem;color:var(--muted)}
+.hm-news{display:grid;grid-template-columns:minmax(0,1fr) 104px;width:100%;border:0;cursor:pointer;text-align:left;font:inherit;color:#fff;background:var(--hm-banner);border-radius:22px;overflow:hidden;box-shadow:var(--hm-shadow);min-height:158px;padding:0}
+.hm-nt{display:flex;flex-direction:column;gap:7px;padding:16px 4px 16px 16px;min-width:0}
+.hm-nk{font-size:.75rem;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hm-nk em{font-style:normal;font-weight:900;font-size:.72rem;color:var(--hm-hi-ink);background:var(--hm-hi);border-radius:99px;padding:2px 9px}
+.hm-nt b{font-size:1.08rem;line-height:1.45}
+.hm-ntag{display:flex;gap:6px;flex-wrap:wrap}
+.hm-ntag i{font-style:normal;font-size:.7rem;font-weight:700;color:#22201C;background:#ECE8E0;border-radius:99px;padding:1px 8px}
+.hm-ntag i.micro{background:#F4B4AC}.hm-ntag i.foreign{background:#F2B35B}.hm-ntag i.allergen{background:#F5C77E}.hm-ntag i.chem{background:#C9B8F0}.hm-ntag i.label{background:#A9D3F2}
+.hm-nm{font-size:.8rem;font-weight:700;color:var(--hm-hi)}
+.hm-news img{width:104px;height:100%;min-height:158px;object-fit:cover;object-position:4% 100%;align-self:end}
+.hm-take{display:grid;gap:6px;background:var(--accent-soft);border-radius:20px;padding:14px 16px;border-left:6px solid var(--accent)}
+.hm-take b{font-size:1.02rem;line-height:1.55}
+.hm-hero{background:var(--surface);border-radius:24px;overflow:hidden;box-shadow:var(--hm-shadow)}
+.hm-pic{position:relative;height:196px;background:var(--accent-soft);overflow:hidden}
+.hm-pic>svg{position:absolute;inset:0;width:100%;height:100%}
+.hm-chip{position:absolute;left:12px;top:12px;font-size:.72rem;font-weight:700;color:var(--accent-deep);background:var(--surface);border-radius:99px;padding:3px 10px}
+.hm-ch{position:absolute;right:-6px;bottom:-4px;width:158px;height:164px;object-fit:contain;object-position:bottom;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18));pointer-events:none}
+.hm-ch.prod{width:174px;height:180px}
+.hm-body{padding:14px 16px 16px;display:grid;gap:12px}
+.hm-body h2{margin:0;font-size:1.25rem;font-weight:900}
+.hm-stg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.hm-stg span{display:grid;gap:4px;justify-items:center;font-size:.68rem;font-weight:700;color:var(--muted)}
+.hm-stg i{display:block;width:100%;height:8px;border-radius:99px;background:var(--line);box-sizing:border-box}
+.hm-stg .ok{color:var(--ink)}.hm-stg .ok i{background:var(--accent)}
+.hm-stg .now{color:var(--ink)}.hm-stg .now i{background:var(--hm-hi)}
+:root[data-role="line"] .hm-stg .now i{background:var(--accent-soft);border:1.5px dashed var(--accent-deep)}
+.hm-cta{width:100%;border:0;cursor:pointer;border-radius:16px;padding:15px 10px;font:900 1.02rem var(--f-body);background:var(--accent);color:var(--on-accent)}
+.hm-cta.done{background:var(--accent-soft);color:var(--accent-deep)}
+.hm-card{background:var(--surface);border-radius:20px;padding:14px 16px;box-shadow:var(--hm-shadow);display:grid;gap:10px}
+.hm-foil{width:100%;height:62px;border:0;border-radius:14px;cursor:pointer;font:700 .9rem var(--f-body);color:var(--ink);background:repeating-linear-gradient(135deg,#CFCAC1 0 8px,#C3BDB3 8px 16px)}
+:root[data-theme="dark"] .hm-foil{background:repeating-linear-gradient(135deg,#4A4D57 0 8px,#40434C 8px 16px)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .hm-foil{background:repeating-linear-gradient(135deg,#4A4D57 0 8px,#40434C 8px 16px)} }
+.hm-prize{display:grid;gap:4px;background:var(--accent-soft);border-radius:14px;padding:12px 14px}
+.hm-prize b{font-size:.98rem;line-height:1.5}.hm-prize span:last-child{font-size:.82rem;color:var(--muted);line-height:1.5}
+.hm-sec{display:grid;gap:8px}
+.hm-sec h3{margin:0 2px;font-size:1rem}
+.hm-tasks{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
+.hm-tasks::-webkit-scrollbar{display:none}
+.hm-task{flex:none;width:168px;border:0;cursor:pointer;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border-radius:20px;overflow:hidden;box-shadow:var(--hm-shadow);padding:0;display:grid}
+.hm-tp{position:relative;height:120px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.hm-task.ev .hm-tp{background:var(--bad-soft)}.hm-task.in .hm-tp{background:#E6EEF8}
+:root[data-theme="dark"] .hm-task.in .hm-tp{background:#202D40}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .hm-task.in .hm-tp{background:#202D40} }
+.hm-tp img{width:140px;height:116px;object-fit:contain;object-position:bottom}
+.hm-tp em{position:absolute;left:10px;top:10px;font-style:normal;font-size:.7rem;font-weight:700;color:#fff;border-radius:99px;padding:1px 8px;background:#C8473A}
+.hm-task.in .hm-tp em{background:#2F68AE}
+.hm-task b{padding:10px 12px 0;font-size:.95rem}
+.hm-task>span:last-child{padding:2px 12px 12px;font-size:.78rem;color:var(--muted)}
+.hm-goal{display:flex;align-items:center;gap:12px;width:100%;border:0;cursor:pointer;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border-radius:20px;padding:10px 14px 10px 10px;box-shadow:var(--hm-shadow)}
+.hm-gm{flex:none;width:60px;height:60px;border-radius:99px;background:var(--accent-soft);display:grid;place-items:center}
+.hm-gm svg{width:44px;height:48px}
+.hm-gt{flex:1;min-width:0;display:grid;gap:2px}.hm-gt b{font-size:1rem}
+.hm-go{flex:none;font-size:.8rem;font-weight:700;color:var(--accent-deep);background:var(--accent-soft);border-radius:99px;padding:7px 12px}
+.hm-back{display:block;border:0;background:transparent;color:var(--accent-deep);font:700 .85rem var(--f-body);padding:2px 0 8px;cursor:pointer}
+@media (max-height:700px){ .hm-pic{height:160px} .hm-news,.hm-news img{min-height:140px} .hm-ch{width:136px;height:142px} .hm-ch.prod{width:150px;height:156px} }
 /* ===== 本週工地（小島）：色票跟著學堂的深淺色 ===== */
 :root{--is-prod:#3B5BDB;--is-qa:#1E8A5A;--is-line:#D2602A;--is-sky-a:#CBE8F3;--is-sky-b:#9FD0E4;
   --is-grass:#B3DA90;--is-grass-hi:#C3E3A3;--is-soil:#D2B489;--is-soil-dk:#A88658;--is-soil-ink:#5A472F;--is-rock:#A2876A;--is-road:#E6D9BA;
@@ -775,6 +852,7 @@ let role = store.get("role","prod");
 let tab = "today", flowKey = "chain", kTab = "news";
 let ptab = null;
 let viewing = null, slide = 0, celebrate = false;
+let home = true;   /* 今日關卡首頁（2026-11-05 改版）：打開先看首頁，按「開始今日關卡」才進課卡 */
 let done = store.get("done",{}), notes = store.get("notes",{}), quiz = store.get("quiz",{}), flips = store.get("flips",{}), orders = store.get("orders",{}), ordOk = store.get("ordOk",{}), ordDraft = {}, mtipW = null;
 let fs = store.get("fs",1);
 let thm = store.get("thm",null);
@@ -1012,7 +1090,55 @@ function renderReview(){
 }
 
 /* ---------- 今日關卡 ---------- */
+
+/* ---------- 今日關卡首頁（2026-11-05 改版：參考 App 首頁的「一個主角＋一顆大按鈕」） ----------
+   只讀既有紀錄（done、todayDone、quiz、orders…），新增的紀錄只有 xf5-scratch（今天的明日預告刮過或略過）。 */
+const HM_IMG={qa:"img/qa.webp",prod:"img/prod.webp",line:"img/line.webp",ev:"img/tech.webp",insp:"img/insp.webp",news:"img/news.webp"};
+const HM_STG=["整地","鋼骨","外牆","屋頂","啟用"];
+function lessonBlocks(id){ const sl=D.lessons[id]; return sl?[].concat(...sl):[]; }
+function takeOfLesson(id){ const b=lessonBlocks(id).find(x=>x.k==="take"); return b?b.t:""; }
+function hmTake(w){ for(let d=2;d>=0;d--){ if(done[lid(w,d)]){ const t=takeOfLesson(lid(w,d)); if(t) return {t,w,d}; } }
+  if(w>1){ const t=takeOfLesson(lid(w-1,0)); if(t) return {t,w:w-1,d:0}; } return null; }
+function hmTodayDone(){ const td=store.get("todayDone",null); return !!(td && td.date===todayStr && td.role===role && done[lid(td.w,td.d)]); }
+function hmGoal(){ for(let x=1;x<=WEEKS;x++){ if(weekTier(x)==="bronze"){ const m=weekMissing(x).length; return {w:x,t:m?`還差 ${m} 題就升銀牌`:"看完錯題回顧就升銀牌"}; } } return null; }
+function hmScratch(nu){
+  if(!nu || nu.w===0) return "";
+  const sc=store.get("scratch",null), st=sc&&sc.date===todayStr?sc.st:"";
+  if(st==="skip") return "";
+  const B=lessonBlocks(lid(nu.w,nu.d)), h=B.find(x=>x.k==="head"), pr=B.find(x=>x.k==="predict");
+  const nm=nu.d<3?STEPN[nu.d]:nu.d===3?`共同課：${D.weeks.common[nu.w-1]}`:"週五案例";
+  const body = st==="open"
+    ? `<div class="hm-prize"><span class="hm-k">明日預告・第 ${nu.w} 週 ${esc(nm)}</span>${pr?`<b>${esc(pr.q)}</b>`:`<b>${esc(h?h.t:lessonTitle(nu.w,nu.d))}</b>`}${h&&h.g?`<span>學完你${esc(/^能/.test(h.g)?h.g:"能："+h.g)}${pr?"答案明天揭曉。":""}</span>`:""}</div>`
+    : `<button type="button" class="hm-foil" data-act="scratch">刮開看明天的題目</button>`;
+  return `<section class="hm-card hm-scr"><div class="hm-row"><b>明日預告刮刮卡</b><button type="button" class="hm-lnk" data-act="scratchskip">略過</button></div>${body}</section>`;
+}
+function homeHTML(){
+  const cur=current(); if(!cur || cur.w===0) return "";
+  const w=cur.w, tdDone=hmTodayDone(), nu=nextUnfinished(), n=weekDone(w);
+  const bn=(window.__isleTest&&window.__isleTest.ISLE_B&&window.__isleTest.ISLE_B[role][w-1])?window.__isleTest.ISLE_B[role][w-1].n:D.weeks[role][w-1];
+  const id=`<button type="button" class="hm-id" data-act="hmprog" aria-label="查看我的進度"><span class="hm-tag">${ROLES[role]}</span><span class="hm-wk">第 ${w} 週</span><span class="hm-bar"><i style="width:${n*20}%"></i></span><span class="hm-n">${n}/5 關</span></button>`;
+  const news=(typeof nsBannerHTML==="function")?nsBannerHTML():"";
+  let top=news;
+  if(!top){ const tk=hmTake(w); if(tk) top=`<section class="hm-take"><span class="hm-k">本週帶走的一句話</span><b>${esc(tk.t)}</b><span class="hm-s">第 ${tk.w} 週・${STEPN[tk.d]}</span></section>`; }
+  const stg=HM_STG.map((t,i)=>{ const ok=!!done[lid(w,i)], now=!tdDone&&i===cur.d&&!ok; return `<span class="${ok?"ok":now?"now":""}"><i></i>${t}</span>`; }).join("");
+  let cta;
+  if(tdDone) cta=`<button type="button" class="hm-cta done" data-act="homereview">今天完成 ✓ 明天見</button>${nu?`<button type="button" class="hm-lnk c" data-act="homenext">還有時間？再上一關 ›</button>`:""}`;
+  else if(nu) cta=`<button type="button" class="hm-cta" data-act="homego">開始今日關卡・${esc(STEPN[cur.d])} ›</button><span class="hm-s c">這關約 ${deck(cur.w,cur.d).mins} 分鐘</span>`;
+  else cta=`<button type="button" class="hm-cta done" data-act="hmprog">全部完成・回頭複習 ›</button>`;
+  const site=(typeof window.isleHeroHTML==="function")?window.isleHeroHTML(w):"";
+  const hero=`<section class="hm-hero"><div class="hm-pic">${site}<span class="hm-chip">本週工地</span><img class="hm-ch ${role}" src="${HM_IMG[role]}" alt="" loading="eager" decoding="async"></div>
+    <div class="hm-body"><div class="hm-row"><h2>${esc(bn)}</h2><span class="hm-s">蓋到第 ${n}／5 階段</span></div><div class="hm-stg">${stg}</div>${cta}</div></section>`;
+  const pend=(typeof window.islePending==="function")?window.islePending():[];
+  const pc=pend.map(p=>p.k==="ev"
+    ? `<button type="button" class="hm-task ev" data-isle="ev"><span class="hm-tp"><img src="${HM_IMG.ev}" alt=""><em>停電</em></span><b>停電待搶修</b><span>回答 1 題恢復供電</span></button>`
+    : `<button type="button" class="hm-task in" data-isle="insp"><span class="hm-tp"><img src="${HM_IMG.insp}" alt=""><em>本週內</em></span><b>稽查員來訪</b><span>本週 1 次・答對種樹</span></button>`).join("");
+  const tasks=pc?`<section class="hm-sec"><h3>待處理</h3><div class="hm-tasks">${pc}</div></section>`:"";
+  const g=hmGoal(); medalUid=0;
+  const goal=g?`<button type="button" class="hm-goal" data-act="gomtip" data-w="${g.w}"><span class="hm-gm">${medalSVG(g.w,"bronze")}</span><span class="hm-gt"><span class="hm-s">下一個獎章・第 ${g.w} 週</span><b>銅 → 銀：${g.t.replace("就升銀牌","")}</b></span><span class="hm-go">去補題 ›</span></button>`:"";
+  return `<div class="hm">${id}${top}${hero}${tdDone?hmScratch(nu):""}${tasks}${goal}</div>`;
+}
 function renderToday(){
+  if (home && !viewing && !celebrate && !review){ const h=homeHTML(); if(h) return h; }
   const cur=current(), {w,d}=cur, dk=deck(w,d), isDone=!!done[dk.id];
   if (slide>=dk.slides.length) slide=dk.slides.length-1;
   let hero;
@@ -1039,7 +1165,7 @@ function renderToday(){
       <p>${nx&&w!==0?"一天一關最剛好，明天打開會自動到下一關。":""}</p>
       <div class="nav2">${nx?`<button type="button" class="btn primary" data-act="gonext">${w===0?"開始第一課":"繼續下一關"}</button>`:""}<button type="button" class="btn" data-act="closecel">回顧這一關</button></div></div>`;
   }
-  return `${hero}<section class="deck" id="deck"><div class="slide" id="slide">${dk.slides[slide]}${(termSeen<5&&/class="term"/.test(dk.slides[slide]))?`<p class="termhint">💡 點有虛底線的詞，可以看白話解釋</p>`:""}</div>${foot}${cel}</section>`;
+  return `${w>0?`<button type="button" class="hm-back" data-act="home">‹ 今日首頁</button>`:""}${hero}<section class="deck" id="deck"><div class="slide" id="slide">${dk.slides[slide]}${(termSeen<5&&/class="term"/.test(dk.slides[slide]))?`<p class="termhint">💡 點有虛底線的詞，可以看白話解釋</p>`:""}</div>${foot}${cel}</section>`;
 }
 
 /* ---------- 週獎章（A 獎章：刻主題圖案、銅銀金、職務色緞帶） ---------- */
@@ -1231,13 +1357,13 @@ function reviewRow(w,d){
   if (!ns || (nu && nu.w===ns.w && nu.d===ns.d)) return "";
   return `<div class="revrow">${nu?`<button type="button" class="lnk" data-act="gonext">回到最新進度（第 ${nu.w} 週 · ${STEPN[nu.d]}）</button>`:`<button type="button" class="lnk" data-act="tabtoday">✓ 全部完成，回到今日關卡</button>`}</div>`;
 }
-function go(w,d){ viewing={w,d}; slide=0; celebrate=false; tab="today"; render(); window.scrollTo(0,0); }
+function go(w,d){ viewing={w,d}; slide=0; celebrate=false; tab="today"; home=false; render(); window.scrollTo(0,0); }
 
 document.addEventListener("click",e=>{
   const tm=e.target.closest(".term"); if(tm){ termSeen++; store.set("termSeen",termSeen); document.getElementById("sheet-t").textContent=tm.dataset.term; document.getElementById("sheet-p").textContent=D.gloss[tm.dataset.term]||""; document.getElementById("sheet").hidden=false; return; }
   if (e.target.id==="sheet"){ document.getElementById("sheet").hidden=true; return; }
-  const r=e.target.closest("button[data-role]"); if(r){ review=null; role=r.dataset.role; store.set("role",role); viewing=null; slide=0; celebrate=false; render(); return; }
-  const t=e.target.closest("button[data-tab]"); if(t){ tab=t.dataset.tab; if(tab==="today"){viewing=null;slide=0;celebrate=false;review=null;} render(); window.scrollTo(0,0); return; }
+  const r=e.target.closest("button[data-role]"); if(r){ review=null; role=r.dataset.role; store.set("role",role); viewing=null; slide=0; celebrate=false; if(tab==="today") home=true; render(); return; }
+  const t=e.target.closest("button[data-tab]"); if(t){ tab=t.dataset.tab; if(tab==="today"){viewing=null;slide=0;celebrate=false;review=null;home=true;} render(); window.scrollTo(0,0); return; }
   const fl=e.target.closest("button[data-flow]"); if(fl){ flowKey=fl.dataset.flow; render(); return; }
   const k=e.target.closest("button[data-k]"); if(k){ kTab=k.dataset.k; render(); return; }
   const a=e.target.closest("[data-act]"); if(!a||a.disabled) return;
@@ -1282,6 +1408,15 @@ document.addEventListener("click",e=>{
     else if (ordDraft[k]) ordDraft[k]=[];
     else { delete orders[k]; store.set("orders",orders); }
     render(true); }
+  else if (act==="home"){ home=true; viewing=null; slide=0; celebrate=false; review=null; render(); window.scrollTo(0,0); }
+  else if (act==="homego"){ home=false; viewing=null; slide=0; render(); window.scrollTo(0,0); }
+  else if (act==="homenext"){ const n=nextUnfinished(); if(n){ store.set("todayDone",{date:todayStr,role,w:n.w,d:n.d}); go(n.w,n.d); } }
+  else if (act==="homereview"){ const td=store.get("todayDone",null); if(td) go(td.w,td.d); }
+  else if (act==="scratch"){ store.set("scratch",{date:todayStr,st:"open"}); render(); }
+  else if (act==="scratchskip"){ store.set("scratch",{date:todayStr,st:"skip"}); render(); }
+  else if (act==="hmprog"){ tab="prog"; render(); window.scrollTo(0,0); }
+  else if (act==="gomtip"){ tab="prog"; ptab="medal"; mtipW=+a.dataset.w; render(); window.scrollTo(0,0); }
+  else if (act==="gonews"){ if(typeof nsMarkSeen==="function") nsMarkSeen(); tab="know"; kTab="news"; review=null; render(); window.scrollTo(0,0); }
   else if (act==="mtip"){ const w=+a.dataset.w; mtipW = mtipW===w ? null : w; render(true); }
   else if (act==="miss"){ const w=+a.dataset.w, m=weekMissing(w)[+a.dataset.j||0]; mtipW=null; if(m){ go(w,m.d); slide=m.s; render(); window.scrollTo(0,0); } }
   else if (act==="flip"){ flips[a.dataset.key]=!flips[a.dataset.key]; store.set("flips",flips); render(true); }
@@ -1415,10 +1550,19 @@ function nsBoot(o){
     if(done) return; done=true; clearTimeout(fallback);
     const f=nsSort(fs||[])[0], r=nsSort(rd||[])[0], seen=ls.get("newsSeen",[]);
     const fresh=[f,r].filter(x=>x&&!seen.includes(NS_ID(x)));
-    if(!fresh.length||nsActed||!o.eligible()){ o.after(); return; }
+    if(!fresh.length||(nsActed&&!o.banner)||!o.eligible()){ o.after(); return; }
+    if(o.banner){ /* 基礎班 2026-11-05：不跳封面，改在今日關卡首頁放橫幅 */
+      NS_FRESH={f:fresh.includes(f)?f:null,r:fresh.includes(r)?r:null,mark:()=>{ const s=ls.get("newsSeen",[]); [f,r].forEach(x=>{ if(x&&!s.includes(NS_ID(x))) s.push(NS_ID(x)); }); ls.set("newsSeen",s.slice(-40)); }};
+      o.after(); if(o.onFresh) o.onFresh(); return; }
     nsShowCover(f,r,()=>{ const s=ls.get("newsSeen",[]); [f,r].forEach(x=>{ if(x&&!s.includes(NS_ID(x))) s.push(NS_ID(x)); }); ls.set("newsSeen",s.slice(-40)); },o);
   });
 }
+/* 今日關卡首頁的新知橫幅（基礎班）；點了記成看過並跳到共同知識 */
+let NS_FRESH=null;
+function nsMarkSeen(){ if(NS_FRESH){ NS_FRESH.mark(); NS_FRESH=null; } }
+function nsBannerHTML(){ if(!NS_FRESH) return ""; const f=NS_FRESH.f, r=NS_FRESH.r, e=f||r; if(!e) return "";
+  const h=f?nsHaz(f):null;
+  return `<button type="button" class="hm-news" data-act="gonews"><span class="hm-nt"><span class="hm-nk"><em>NEW</em>${f?`${nsMD(f.date)} 本週食安提醒`:`${nsMD(r.date)} 推薦閱讀`}</span><b>${esc(f?nsTitle(f):r.title||"")}</b>${f?`<span class="hm-ntag">${h?`<i class="${h[1]}">${h[0]}</i>`:""}<i>${esc(nsProd(f))}</i>${f.country?`<i>${esc(f.country)}</i>`:""}</span>`:""}<span class="hm-nm">${f&&r?"看細節＋推薦閱讀 ›":"看細節 ›"}</span></span><img src="img/news.webp" alt=""></button>`; }
 function nsShowCover(f,r,markSeen,o){
   const host=document.createElement("div"); host.id="ns-cover"; host.setAttribute("role","dialog"); host.setAttribute("aria-modal","true"); host.setAttribute("aria-label","本週新知");
   const d=(f&&f.date)>(r&&r.date)?f.date:(r?r.date:f.date), m=String(d||"").match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -1950,6 +2094,11 @@ window.isleThumbHTML=function(){
   return `<button type="button" class="is-thumb ${go!=="open"?"alert":""}" data-isle="${go}" aria-label="${go==="ev"?"處理停電":go==="insp"?"回答稽查員抽問":"打開我的小島"}">${siteSVG(w,{vb:`${f1(c[0]-110)} ${f1(c[1]-72)} 220 140`,noTap:true,noInsp:true})}<span>${go!=="open"?'<i class="is-dot"></i>':""}${tag}</span></button>`;
 };
 window.isleStripHTML=window.isleThumbHTML;
+/* 今日關卡首頁（2026-11-05）：本週工地大圖＋待處理清單 */
+window.isleHeroHTML=function(w){ if(!STORE_OK) return ""; PR={cx:180,cy:128,a:150,b:75}; const c=P(.5,.5,.3);
+  return siteSVG(w,{vb:`${f1(c[0]-118)} ${f1(c[1]-112)} 340 212`,noInsp:true}); };
+window.islePending=function(){ if(!STORE_OK) return []; const ev=evState(), ins=inspState(), out=[];
+  if(ev&&!ev.done) out.push({k:"ev"}); if(ins&&!ins.done) out.push({k:"insp"}); return out; };
 window.isleCelHTML=function(w,d,conf){
   if(!w || !STORE_OK) return `<div class="confetti">${conf}</div><div class="big">✓</div>`;
   markSeen();
@@ -1969,8 +2118,8 @@ window.isleAreaCard=function(n,total){
 function isleSig(){ const w=curWeek(), ev=evState(), ins=inspState();
   return [role,w,stageOf(role,w),ev&&!ev.done?ev.key:"",ins&&!ins.done?ins.key:""].join("|"); }
 function markSeen(){ try{ store.set("isleSig",isleSig()); }catch(e){} }
-window.isleBoot=function(){ if(!STORE_OK) return; ensureHost();
-  if(store.get("isleSig","")!==isleSig()){ markSeen(); openIsle("site"); } };
+/* 2026-11-05：今日關卡首頁已經放大顯示本週工地與待處理，打開時不再自動跳小島 */
+window.isleBoot=function(){ if(!STORE_OK) return; ensureHost(); markSeen(); };
 window.isleCodeSuffix=function(){ return trees>0?`~T${trees}`:""; };
 window.isleCodeRestore=function(c){ const m=String(c).match(/~T(\d{1,3})$/); if(m){ trees=Math.max(trees,+m[1]); store.set("isleTrees",trees); return c.slice(0,m.index); } return c; };
 
@@ -2011,7 +2160,7 @@ window.__isleTest={mileOpen,mileRowSVG,ctxOf,qBlocks,building,siteSVG,areaSVG,st
 
 window.addEventListener("resize",fitDeck);
 render();
-nsBoot({fsUrl:"foodsafety.json",rdUrl:"readings.json",prefix:"xf5-",eligible:()=>Object.keys(done).length>0,onData:(f,r)=>{ if(f.length) FSI=f; if(r.length) D.readings=r; if(tab==="know") render(true); },after:()=>isleBoot(),openNews:()=>{ tab="know"; kTab="news"; review=null; render(); window.scrollTo(0,0); }});
+nsBoot({fsUrl:"foodsafety.json",rdUrl:"readings.json",prefix:"xf5-",eligible:()=>Object.keys(done).length>0,onData:(f,r)=>{ if(f.length) FSI=f; if(r.length) D.readings=r; if(tab==="know") render(true); },after:()=>isleBoot(),banner:true,onFresh:()=>{ if(tab==="today") render(true); },openNews:()=>{ tab="know"; kTab="news"; review=null; render(); window.scrollTo(0,0); }});
 fetch("readings.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if(Array.isArray(j)&&j.length){ D.readings=j; if(tab==="know") render(); } }).catch(()=>{});
 fetch("foodsafety.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if(Array.isArray(j)&&j.length){ FSI=j; if(tab==="know") render(); } }).catch(()=>{});
 </script>
