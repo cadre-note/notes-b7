@@ -509,6 +509,9 @@ ol.toc span{font-family:var(--f-mono);color:var(--accent);min-width:2.4em}
 .hm-go{flex:none;font-size:.8rem;font-weight:700;color:var(--accent-deep);background:var(--accent-soft);border-radius:99px;padding:7px 12px}
 .hm-back{display:block;border:0;background:transparent;color:var(--accent-deep);font:700 .85rem var(--f-body);padding:2px 0 8px;cursor:pointer}
 @media (max-height:700px){ .hm-pic{height:160px} .hm-news,.hm-news img{min-height:140px} .hm-ch{width:136px;height:142px} .hm-ch.prod{width:150px;height:156px} }
+
+/* 人物圖淡入：已在快取的圖幾乎立刻出現，網路慢時不會突然跳出來 */
+.hm-ch{opacity:0;transition:opacity .25s ease}.hm-ch.in{opacity:1}
 /* ===== 本週工地（小島）：色票跟著學堂的深淺色 ===== */
 :root{--is-prod:#3B5BDB;--is-qa:#1E8A5A;--is-line:#D2602A;--is-sky-a:#CBE8F3;--is-sky-b:#9FD0E4;
   --is-grass:#B3DA90;--is-grass-hi:#C3E3A3;--is-soil:#D2B489;--is-soil-dk:#A88658;--is-soil-ink:#5A472F;--is-rock:#A2876A;--is-road:#E6D9BA;
@@ -1095,6 +1098,9 @@ function renderReview(){
    只讀既有紀錄（done、todayDone、quiz、orders…），新增的紀錄只有 xf5-scratch（今天的明日預告刮過或略過）。 */
 const HM_IMG={qa:"img/qa.webp",prod:"img/prod.webp",line:"img/line.webp",ev:"img/tech.webp",insp:"img/insp.webp",news:"img/news.webp"};
 const HM_STG=["整地","鋼骨","外牆","屋頂","啟用"];
+/* 打開時在背景先下載 6 張人物圖（約 210KB），切換職務時不用再等（2026-11-05） */
+const HM_PRE=[]; setTimeout(()=>{ for(const k in HM_IMG){ const i=new Image(); i.decoding="async"; i.src=HM_IMG[k]; HM_PRE.push(i); } },0);
+function hmLoaded(img){ img.classList.add("in"); }
 function lessonBlocks(id){ const sl=D.lessons[id]; return sl?[].concat(...sl):[]; }
 function takeOfLesson(id){ const b=lessonBlocks(id).find(x=>x.k==="take"); return b?b.t:""; }
 function hmTodayDone(){ const td=store.get("todayDone",null); return !!(td && td.date===todayStr && td.role===role && done[lid(td.w,td.d)]); }
@@ -1123,7 +1129,7 @@ function homeHTML(){
   else if(nu) cta=`<button type="button" class="hm-cta" data-act="homego">開始今日關卡・${esc(STEPN[cur.d])} ›</button><span class="hm-s c">這關約 ${deck(cur.w,cur.d).mins} 分鐘</span>`;
   else cta=`<button type="button" class="hm-cta done" data-act="hmprog">全部完成・回頭複習 ›</button>`;
   const site=(typeof window.isleHeroHTML==="function")?window.isleHeroHTML(w):"";
-  const hero=`<section class="hm-hero"><div class="hm-pic">${site}<span class="hm-chip">本週工地</span><img class="hm-ch ${role}" src="${HM_IMG[role]}" alt="" loading="eager" decoding="async"></div>
+  const hero=`<section class="hm-hero"><div class="hm-pic">${site}<span class="hm-chip">本週工地</span><img class="hm-ch ${role}" src="${HM_IMG[role]}" alt="" loading="eager" decoding="async" onload="hmLoaded(this)" onerror="hmLoaded(this)"></div>
     <div class="hm-body"><div class="hm-row"><h2>${esc(bn)}</h2><span class="hm-s">蓋到第 ${n}／5 階段</span></div><div class="hm-stg">${stg}</div>${cta}</div></section>`;
   const pend=(typeof window.islePending==="function")?window.islePending():[];
   const pc=pend.map(p=>p.k==="ev"
