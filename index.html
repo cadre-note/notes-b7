@@ -1097,8 +1097,6 @@ const HM_IMG={qa:"img/qa.webp",prod:"img/prod.webp",line:"img/line.webp",ev:"img
 const HM_STG=["整地","鋼骨","外牆","屋頂","啟用"];
 function lessonBlocks(id){ const sl=D.lessons[id]; return sl?[].concat(...sl):[]; }
 function takeOfLesson(id){ const b=lessonBlocks(id).find(x=>x.k==="take"); return b?b.t:""; }
-function hmTake(w){ for(let d=2;d>=0;d--){ if(done[lid(w,d)]){ const t=takeOfLesson(lid(w,d)); if(t) return {t,w,d}; } }
-  if(w>1){ const t=takeOfLesson(lid(w-1,0)); if(t) return {t,w:w-1,d:0}; } return null; }
 function hmTodayDone(){ const td=store.get("todayDone",null); return !!(td && td.date===todayStr && td.role===role && done[lid(td.w,td.d)]); }
 function hmGoal(){ for(let x=1;x<=WEEKS;x++){ if(weekTier(x)==="bronze"){ const m=weekMissing(x).length; return {w:x,t:m?`還差 ${m} 題就升銀牌`:"看完錯題回顧就升銀牌"}; } } return null; }
 function hmScratch(nu){
@@ -1118,8 +1116,7 @@ function homeHTML(){
   const bn=(window.__isleTest&&window.__isleTest.ISLE_B&&window.__isleTest.ISLE_B[role][w-1])?window.__isleTest.ISLE_B[role][w-1].n:D.weeks[role][w-1];
   const id=`<button type="button" class="hm-id" data-act="hmprog" aria-label="查看我的進度"><span class="hm-tag">${ROLES[role]}</span><span class="hm-wk">第 ${w} 週</span><span class="hm-bar"><i style="width:${n*20}%"></i></span><span class="hm-n">${n}/5 關</span></button>`;
   const news=(typeof nsBannerHTML==="function")?nsBannerHTML():"";
-  let top=news;
-  if(!top){ const tk=hmTake(w); if(tk) top=`<section class="hm-take"><span class="hm-k">本週帶走的一句話</span><b>${esc(tk.t)}</b><span class="hm-s">第 ${tk.w} 週・${STEPN[tk.d]}</span></section>`; }
+  const top=news;
   const stg=HM_STG.map((t,i)=>{ const ok=!!done[lid(w,i)], now=!tdDone&&i===cur.d&&!ok; return `<span class="${ok?"ok":now?"now":""}"><i></i>${t}</span>`; }).join("");
   let cta;
   if(tdDone) cta=`<button type="button" class="hm-cta done" data-act="homereview">今天完成 ✓ 明天見</button>${nu?`<button type="button" class="hm-lnk c" data-act="homenext">還有時間？再上一關 ›</button>`:""}`;
@@ -1547,22 +1544,23 @@ function nsBoot(o){
   let done=false; const fallback=setTimeout(()=>{ if(!done){ done=true; o.after(); } },2500);
   Promise.all([get(o.fsUrl),get(o.rdUrl)]).then(([fs,rd])=>{
     if(fs||rd) o.onData(fs||[],rd||[]);
+    if(o.banner){ /* 基礎班 2026-11-05：新知橫幅常駐在今日關卡首頁，沒看過的才有 NEW */
+      const f0=nsSort(fs||[])[0], r0=nsSort(rd||[])[0], sn=ls.get("newsSeen",[]);
+      NS_FRESH={f:f0||null,r:r0||null,nw:[f0,r0].some(x=>x&&!sn.includes(NS_ID(x))),mark:()=>{ const s=ls.get("newsSeen",[]); [f0,r0].forEach(x=>{ if(x&&!s.includes(NS_ID(x))) s.push(NS_ID(x)); }); ls.set("newsSeen",s.slice(-40)); }};
+      if(o.onFresh) o.onFresh(); if(!done){ done=true; clearTimeout(fallback); o.after(); } return; }
     if(done) return; done=true; clearTimeout(fallback);
     const f=nsSort(fs||[])[0], r=nsSort(rd||[])[0], seen=ls.get("newsSeen",[]);
     const fresh=[f,r].filter(x=>x&&!seen.includes(NS_ID(x)));
     if(!fresh.length||(nsActed&&!o.banner)||!o.eligible()){ o.after(); return; }
-    if(o.banner){ /* 基礎班 2026-11-05：不跳封面，改在今日關卡首頁放橫幅 */
-      NS_FRESH={f:fresh.includes(f)?f:null,r:fresh.includes(r)?r:null,mark:()=>{ const s=ls.get("newsSeen",[]); [f,r].forEach(x=>{ if(x&&!s.includes(NS_ID(x))) s.push(NS_ID(x)); }); ls.set("newsSeen",s.slice(-40)); }};
-      o.after(); if(o.onFresh) o.onFresh(); return; }
     nsShowCover(f,r,()=>{ const s=ls.get("newsSeen",[]); [f,r].forEach(x=>{ if(x&&!s.includes(NS_ID(x))) s.push(NS_ID(x)); }); ls.set("newsSeen",s.slice(-40)); },o);
   });
 }
 /* 今日關卡首頁的新知橫幅（基礎班）；點了記成看過並跳到共同知識 */
 let NS_FRESH=null;
-function nsMarkSeen(){ if(NS_FRESH){ NS_FRESH.mark(); NS_FRESH=null; } }
-function nsBannerHTML(){ if(!NS_FRESH) return ""; const f=NS_FRESH.f, r=NS_FRESH.r, e=f||r; if(!e) return "";
-  const h=f?nsHaz(f):null;
-  return `<button type="button" class="hm-news" data-act="gonews"><span class="hm-nt"><span class="hm-nk"><em>NEW</em>${f?`${nsMD(f.date)} 本週食安提醒`:`${nsMD(r.date)} 推薦閱讀`}</span><b>${esc(f?nsTitle(f):r.title||"")}</b>${f?`<span class="hm-ntag">${h?`<i class="${h[1]}">${h[0]}</i>`:""}<i>${esc(nsProd(f))}</i>${f.country?`<i>${esc(f.country)}</i>`:""}</span>`:""}<span class="hm-nm">${f&&r?"看細節＋推薦閱讀 ›":"看細節 ›"}</span></span><img src="img/news.webp" alt=""></button>`; }
+function nsMarkSeen(){ if(NS_FRESH&&NS_FRESH.nw){ NS_FRESH.mark(); NS_FRESH.nw=false; } }
+function nsBannerHTML(){ if(!NS_FRESH) return ""; const f=NS_FRESH.f, r=NS_FRESH.r, e=f||r, nw=NS_FRESH.nw; if(!e) return "";
+  const h=f?nsHaz(f):null, kick=f?`${nsMD(f.date)} 食安提醒`:`${nsMD(r.date)} 推薦閱讀`;
+  return `<button type="button" class="hm-news" data-act="gonews"><span class="hm-nt"><span class="hm-nk">${nw?`<em>NEW</em>${kick}`:`本週新知・${kick}`}</span><b>${esc(f?nsTitle(f):r.title||"")}</b>${f?`<span class="hm-ntag">${h?`<i class="${h[1]}">${h[0]}</i>`:""}<i>${esc(nsProd(f))}</i>${f.country?`<i>${esc(f.country)}</i>`:""}</span>`:""}<span class="hm-nm">${nw?(f&&r?"看細節＋推薦閱讀 ›":"看細節 ›"):"再看一次 ›"}</span></span><img src="img/news.webp" alt=""></button>`; }
 function nsShowCover(f,r,markSeen,o){
   const host=document.createElement("div"); host.id="ns-cover"; host.setAttribute("role","dialog"); host.setAttribute("aria-modal","true"); host.setAttribute("aria-label","本週新知");
   const d=(f&&f.date)>(r&&r.date)?f.date:(r?r.date:f.date), m=String(d||"").match(/^(\d{4})-(\d{2})-(\d{2})/);
