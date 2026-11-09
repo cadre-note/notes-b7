@@ -1,5 +1,19 @@
 [
  {
+  "date": "2026-11-10",
+  "title": "9 州 13 人感染:美國生乳起司爆大腸桿菌,全面回收",
+  "source": "FDA 疫情調查公告",
+  "url": "https://www.fda.gov/food/outbreaks-foodborne-illness/outbreak-investigation-e-coli-o26h11-raw-milk-cheese-september-2026",
+  "happened": "美國 Graziers 生乳起司與 E. coli O26 疫情有關,9 州 13 人確診、8 人住院;FDA 9/24 通知後公司全面回收,產品也出口韓國。",
+  "cause": "官方尚未公布污染源,調查仍在進行;只確定受訪患者全都吃過該起司,菌株基因高度相近。",
+  "req": "ISO 22000/FSSC 要求做危害分析,對顯著危害設控制措施並確效;不殺菌就得證明其他措施控得住。",
+  "guard": "檢查每條線殺菌 CCP 的溫度時間限值、連續紀錄與偏差隔離;乳原料確認供應商殺菌證明並納入驗收查核。",
+  "q": "殺菌溫度偏低 2 分鐘,那批產品怎麼處理、誰簽放行?",
+  "haz": "微生物",
+  "prod": "乳品",
+  "country": "美國"
+ },
+ {
   "date": "2026-11-03",
   "title": "一座丹麥廠的布丁可能含玻璃,至少五國跟著回收",
   "source": "Dairy Reporter",
