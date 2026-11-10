@@ -1406,7 +1406,7 @@ function homeHTML(){
     ? `<button type="button" class="hm-task ev" data-isle="ev"><span class="hm-tp"><img src="${HM_IMG.ev}" alt=""><em>停電</em></span><b>停電待搶修</b><span>回答 1 題恢復供電</span></button>`
     : `<button type="button" class="hm-task in" data-isle="insp"><span class="hm-tp"><img src="${HM_IMG.insp}" alt=""><em>本週內</em></span><b>稽查員來訪</b><span>本週 1 次・答對種樹</span></button>`).join("");
   const tasks=pc?`<section class="hm-sec"><h3>待處理</h3><div class="hm-tasks">${pc}</div></section>`:"";
-  const g=hmGoal(); medalUid=0;
+  const g=hmGoal();
   const goal=g?`<button type="button" class="hm-goal" data-act="gomtip" data-w="${g.w}"><span class="hm-gm">${medalSVG(g.w,"bronze")}</span><span class="hm-gt"><span class="hm-s">下一個獎章・第 ${g.w} 週</span><b>銅 → 銀：${g.t.replace("就升銀牌","")}</b></span><span class="hm-go">去補題 ›</span></button>`:"";
   return `<div class="hm">${id}${top}${hero}${tdDone?hmScratch(nu):""}${tasks}${goal}</div>`;
 }
@@ -1433,7 +1433,7 @@ function renderToday(){
     const conf=Array.from({length:18},(_,i)=>`<i style="left:${(i*53)%100}%;background:${colors[i%4]};animation-delay:${(i%6)*.08}s"></i>`).join("");
     const cheer=["你又往前一步了！","今天學的，明天就能用在現場。","每一關都在累積你的管理實力。","穩穩前進，比一次衝很多更有效。","你的成長，就是團隊的成長。"];
     cel=`<div class="celebrate">${isleCelHTML(w,d,conf)}<h2>${w===0?"準備好了！":"完成這一關"}</h2>
-      ${full?(()=>{ medalUid=0; const t=weekTier(w); return `<div class="mwin">${medalSVG(w,t,true)}</div><span class="badge">獲得第 ${w} 週${MET[t].n}牌</span><p class="small">${tierHint(w,t)}</p>`; })():""}
+      ${full?(()=>{ const t=weekTier(w); return `<div class="mwin">${medalSVG(w,t,true)}</div><span class="badge">獲得第 ${w} 週${MET[t].n}牌</span><p class="small">${tierHint(w,t)}</p>`; })():""}
       <p class="cheer">${w===0?"歡迎加入，一起成長！":cheer[weekDone(w)%cheer.length]}</p>
       <p>${nx&&w!==0?"一天一關最剛好，明天打開會自動到下一關。":""}</p>
       <div class="nav2">${nx?`<button type="button" class="btn primary" data-act="gonext">${w===0?"開始第一課":"繼續下一關"}</button>`:""}<button type="button" class="btn" data-act="closecel">回顧這一關</button></div></div>`;
@@ -1484,7 +1484,7 @@ const WEEK_MOTIF={
 };
 const ROLE_RIB={prod:"#3B5BDB",qa:"#1E8A5A",line:"#D2602A"};
 const MET={bronze:{a:"#F1C9A0",b:"#A0602F",edge:"#7A4520",ink:"#6B3A17",hi:"#FBE3CB",n:"銅"},silver:{a:"#F6F8FA",b:"#9AA6B2",edge:"#6E7B88",ink:"#4A5560",hi:"#FFFFFF",n:"銀"},gold:{a:"#FFF0B3",b:"#C8961A",edge:"#94690A",ink:"#6A4A00",hi:"#FFF9DC",n:"金"}};
-let medalUid=0;
+let medalUid=0; /* 只增不歸零：同一頁（含底部抽屜）若重用 id，漸層會抓到別枚獎章的顏色 */
 function weekTier(w){
   if (weekDone(w)<5) return null;
   let total=0, ans=0, wrong=0;
@@ -1525,7 +1525,7 @@ function renderProg(){
   const total=WEEKS*5, n=Array.from({length:WEEKS},(_,i)=>weekDone(i+1)).reduce((a,b)=>a+b,0);
   const pct=n/total, C=2*Math.PI*30;
   const medalsN=Array.from({length:WEEKS},(_,i)=>weekDone(i+1)===5).filter(Boolean).length;
-  medalUid=0; const tiers=Array.from({length:WEEKS},(_,i)=>weekTier(i+1));
+  const tiers=Array.from({length:WEEKS},(_,i)=>weekTier(i+1));
   const tn={gold:0,silver:0,bronze:0}; tiers.forEach(t=>{ if(t) tn[t]++; });
   const medals=tiers.map((t,i)=>t==="bronze"?`<button type="button" class="mcell mbtn ${mtipW===i+1?"on":""}" data-act="mtip" data-w="${i+1}" aria-expanded="${mtipW===i+1}" aria-label="第 ${i+1} 週銅牌，看怎麼升級">${medalSVG(i+1,t)}<span>${esc(D.weeks[role][i])}</span></button>`:`<div class="mcell">${medalSVG(i+1,t)}<span>${esc(D.weeks[role][i])}</span></div>`).join("");
   const mtip=(()=>{ if(!mtipW || tiers[mtipW-1]!=="bronze") return ""; const w=mtipW, ms=weekMissing(w);
@@ -1543,7 +1543,7 @@ function renderProg(){
     <div class="lbl"><b>${ROLES[role]} · ${n} / ${total} 關</b><span>不用趕進度，一週 3 關就很好</span></div></div>`;
   const pt = ptab || (medalsN ? "medal" : "prog");
   const seg=`<div class="pseg" role="tablist" aria-label="我的進度">${[["medal","獎章"],["prog","進度"],["note","筆記"]].map(([k,t])=>`<button type="button" role="tab" aria-selected="${pt===k}" data-act="ptab" data-v="${k}">${t}</button>`).join("")}</div>`;
-  const firstHint = medalsN ? "" : (()=>{ let bw=1,bd=-1; for(let x=1;x<=WEEKS;x++){ const k=weekDone(x); if(k>bd&&k<5){bd=k;bw=x;} } medalUid=0;
+  const firstHint = medalsN ? "" : (()=>{ let bw=1,bd=-1; for(let x=1;x<=WEEKS;x++){ const k=weekDone(x); if(k>bd&&k<5){bd=k;bw=x;} }
     return `<section class="card nextm"><div class="nm2">${medalSVG(bw,null)}</div><div><h3>再完成 ${5-bd} 關，就拿到第一枚獎章</h3><p class="small">第 ${bw} 週：${esc(D.weeks[role][bw-1])}。一週 5 關都完成就是銅牌。</p></div></section>`; })();
   const medalPart=`${medalNoteHTML()}<section class="card pg-wall"><h3>獎章展示架 · ${medalsN} 枚</h3><p class="small pg-rule"><i class="b"></i>銅：5 關完成　<i class="s"></i>銀：答完＋看錯題　<i class="g"></i>金：第一次全對</p><div class="medals2">${medals}</div>${tn.bronze?`<p class="small mhint">點銅牌，看還差什麼就能升級</p>`:""}${mtip}</section>`;
   const revPart=(()=>{ const L=Array.from({length:WEEKS},(_,i)=>i+1).filter(x=>weekDone(x)===5).map(x=>[x,weekWrong(x).length,weekMissing(x).length]); if(!L.length) return "";
@@ -1575,12 +1575,12 @@ function mcProg(o){
   const chips=`<div class="mc-chips" role="tablist" aria-label="我的進度">${[["medal",`獎章 ${medalsN}`],["prog",`進度 ${n}/${total}`],["note",`筆記 ${nkeys.length}`]].map(([k,t])=>`<button type="button" role="tab" aria-selected="${pt===k}" data-act="ptab" data-v="${k}">${t}</button>`).join("")}</div>`;
   let body="";
   if(pt==="medal"){
-    const g=hmGoal(); medalUid=0; let big;
+    const g=hmGoal(); let big;
     if(g){ const st=mcStat(g.w), left=st.total-st.ans;
       big=`<button type="button" class="mc-card" data-act="mcweek" data-w="${g.w}"><span class="mc-img"><span class="mc-rib">下一個目標</span><span class="mc-big">${left?`還差<b>${left}</b>題`:`看錯題<b>回顧</b>`}</span><span class="mc-sub2">銅牌 → 銀牌</span><span class="mc-art">${medalSVG(g.w,"silver")}</span>${mcDots(st.ans,Math.min(st.total,12),"lt")}</span><span class="mc-txt"><b>第 ${g.w} 週・${esc(D.weeks[role][g.w-1])}</b><span>點開看還缺哪幾題</span></span></button>`; }
     else { let bw=1,bd=-1; for(let x=1;x<=WEEKS;x++){ const q=weekDone(x); if(q>bd&&q<5){bd=q;bw=x;} }
       big=`<button type="button" class="mc-card" data-act="mcweek" data-w="${bw}"><span class="mc-img"><span class="mc-rib">${medalsN?"下一枚獎章":"第一枚獎章"}</span><span class="mc-big">再<b>${5-bd}</b>關</span><span class="mc-sub2">5 關完成就拿銅牌</span><span class="mc-art">${medalSVG(bw,"bronze")}</span>${mcDots(bd,5,"lt")}</span><span class="mc-txt"><b>第 ${bw} 週・${esc(D.weeks[role][bw-1])}</b><span>點開看這週的關卡</span></span></button>`; }
-    medalUid=0;
+   
     const cards=tiers.map((t,i)=>`<button type="button" class="mc-mini ${t||"none"}" data-act="mcweek" data-w="${i+1}"><span class="mc-mimg">${medalSVG(i+1,t)}</span><b>W${i+1}・${esc(D.weeks[role][i])}</b><span>${t?MC_TN[t]:weekDone(i+1)?`${weekDone(i+1)}/5 關`:"還沒開始"}</span></button>`).join("");
     body=`${big}<section class="mc-sec"><div class="mc-h"><h3>我的獎章</h3><span>金 ${tn.gold}・銀 ${tn.silver}・銅 ${tn.bronze}　左右滑 ›</span></div><div class="mc-car">${cards}</div></section>${o.revPart}<p class="small pg-rule"><i class="b"></i>銅：5 關完成　<i class="s"></i>銀：答完＋看錯題　<i class="g"></i>金：第一次全對</p>`;
   } else if(pt==="note"){
@@ -1603,7 +1603,7 @@ function mcProg(o){
   return chips+body;
 }
 function mcWeekSheet(w){
-  const t=weekTier(w), st=mcStat(w), ms=weekMissing(w); medalUid=0;
+  const t=weekTier(w), st=mcStat(w), ms=weekMissing(w);
   const steps=STEPN.map((n,i)=>{ const ok=!!done[lid(w,i)]; return `<li class="${ok?"ok":""}"><i>${ok?"✓":i+1}</i><span>${i<3?n:i===3?"共同課："+esc(D.weeks.common[w-1]):"週五案例"}</span>${ok?"":`<button type="button" class="mc-go" data-act="open" data-w="${w}" data-d="${i}">去上課</button>`}</li>`; }).join("");
   const miss=ms.length?`<h4>還缺 ${ms.length} 題</h4><ul class="mc-miss">${ms.map((m,j)=>`<li><span>${esc(missLabel(m))}</span><button type="button" class="mc-go" data-act="miss" data-w="${w}" data-j="${j}">前往</button></li>`).join("")}</ul>`:"";
   const rev=(t==="bronze"&&!ms.length)?`<button type="button" class="mc-cta" data-act="wrongs" data-w="${w}">看錯題回顧，升銀牌</button>`:"";
@@ -1637,7 +1637,7 @@ function pgEnter(){
 function pgToast(t){ let el=document.getElementById("pg-toast"); if(!el){ el=document.createElement("div"); el.id="pg-toast"; el.setAttribute("role","status"); document.body.appendChild(el); }
   el.textContent=t; el.classList.add("on"); clearTimeout(pgToast.t); pgToast.t=setTimeout(()=>el.classList.remove("on"),1600); }
 function pgHero(n,total,medalsN){
-  const g=hmGoal(); medalUid=0; let w,tier=null,k,t,s,btn;
+  const g=hmGoal(); let w,tier=null,k,t,s,btn;
   if(g){ w=g.w; tier="bronze"; k=`下一個目標・第 ${w} 週`; t=`銅 → 銀：${g.t.replace("就升銀牌","")}`; s=D.weeks[role][w-1]; btn=`<button type="button" class="pg-cta" data-act="gomtip" data-w="${w}">去補題 ›</button>`; }
   else { const nu=nextUnfinished();
     if(!medalsN){ let bw=1,bd=-1; for(let x=1;x<=WEEKS;x++){ const q=weekDone(x); if(q>bd&&q<5){bd=q;bw=x;} } w=bw; k=`第一枚獎章・第 ${w} 週`; t=`再完成 ${5-bd} 關就拿到`; s=D.weeks[role][w-1]; }
