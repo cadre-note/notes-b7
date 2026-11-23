@@ -1,5 +1,16 @@
 [
  {
+  "date": "2026-11-24",
+  "title": "植物冰品被官方抽驗驗出花生:標籤沒寫,兩款冰品回收",
+  "source": "加拿大食品檢驗署 CFIA",
+  "url": "https://recalls-rappels.canada.ca/en/alert-recall/certain-nora-s-brand-non-dairy-frozen-desserts-recalled-due-undeclared-peanut",
+  "happened": "2026/11/20 加拿大 CFIA 公告,Nora's 兩款非乳製冷凍甜點(草莓、香草)含花生但標籤未標示,列 Class 1 回收,BC 與安省有販售。",
+  "cause": "由 CFIA 檢驗結果觸發;花生如何進入產品(交叉污染或原料)來源未說明,CFIA 表示調查可能擴及其他產品。",
+  "req": "過敏原管理屬前提方案與危害分析範圍,原料、共線、清潔驗證與標示須一致;台灣法規也要求含花生等過敏原須標示。",
+  "guard": "盤點各配方與共線品項的過敏原矩陣;換線清潔後做驗證;新原料或供應商變更時,先核對標示再上線。",
+  "q": "我們共線產品換線後,怎麼證明過敏原已清乾淨?"
+ },
+ {
   "date": "2026-11-17",
   "title": "冰品稽查 63 家:微生物只 1 家超標,多數罰單卡在標示與人員",
   "source": "中央社",
